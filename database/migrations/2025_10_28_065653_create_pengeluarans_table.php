@@ -16,14 +16,20 @@ return new class extends Migration
             $table->foreignId('id_user')->constrained('users');
             $table->decimal('nominal', 10, 2);
             $table->enum('kategori', [
-                'Deterjen & Sabun',
-                'Pewangi & Pelicin',
-                'Pemutih & Pewarna',
-                'Plastik & Kemasan',
-                'Alat Pendukung Cuci & Setrika',
-                'Lain-lain'
+                'operasional',
+                'bahan_baku',
+                'gaji',
+                'utilitas',
+                'maintenance',
+                'lainnya'
             ]);
-            $table->enum('metode_pembayaran', ['Tunai', 'Qris']);
+            $table->enum('metode_pembayaran', [
+                'tunai',
+                'transfer',
+                'e-wallet',
+                'kartu_debit',
+                'kartu_kredit'
+            ]);
             $table->string('penerima', 100);
             $table->text('keterangan')->nullable();
             $table->dateTime('tanggal');

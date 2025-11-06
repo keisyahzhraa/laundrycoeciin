@@ -5,7 +5,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use App\Models\Pengeluaran; 
+use App\Models\Pengeluaran;
 use App\Models\User;
 
 class PengeluaranSeeder extends Seeder
@@ -23,13 +23,16 @@ class PengeluaranSeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
 
             // Pilih kategori acak
+            // $kategori = $faker->randomElement([
+            //     'Deterjen & Sabun',
+            //     'Pewangi & Pelicin',
+            //     'Pemutih & Pewarna',
+            //     'Plastik & Kemasan',
+            //     'Alat Pendukung Cuci & Setrika',
+            //     'Lain-lain'
+            // ]);
             $kategori = $faker->randomElement([
-                'Deterjen & Sabun',
-                'Pewangi & Pelicin',
-                'Pemutih & Pewarna',
-                'Plastik & Kemasan',
-                'Alat Pendukung Cuci & Setrika',
-                'Lain-lain'
+                'operasional','bahan_baku','gaji','utilitas','maintenance','lainnya'
             ]);
 
             // Nominal acak sesuai kategori
@@ -43,7 +46,9 @@ class PengeluaranSeeder extends Seeder
             };
 
             // Metode pembayaran acak
-            $metodePembayaran = $faker->randomElement(['Tunai', 'Qris']);
+            // $metodePembayaran = $faker->randomElement(['Tunai', 'Qris']);
+            $metodePembayaran = $faker->randomElement(['tunai','transfer','e-wallet','kartu_debit','kartu_kredit']);
+
 
             // Buat tanggal acak dalam 30 hari terakhir
             $tanggal = Carbon::now()->subDays(rand(0, 30));
@@ -60,7 +65,7 @@ class PengeluaranSeeder extends Seeder
 
             // Simpan ke database via model
             Pengeluaran::create([
-                'id_user' => $user -> id, 
+                'id_user' => $user -> id,
                 'nominal' => $nominal,
                 'kategori' => $kategori,
                 'metode_pembayaran' => $metodePembayaran,

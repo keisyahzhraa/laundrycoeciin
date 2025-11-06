@@ -26,22 +26,21 @@ class PesananSeeder extends Seeder
             $tanggalPesanan = Carbon::now()->subDays(rand(1, 14));
 
             // status pesanan (acak)
-            $statusPesanan = $faker->randomElement(['Belum', 'Dikerjakan', 'Selesai']);
+            $statusPesanan = $faker->randomElement(['Pending', 'Proses', 'Selesai']);
             $tanggalSelesai = $statusPesanan === 'Selesai'
                 ? (clone $tanggalPesanan)->addDays(rand(1, 3))
                 : null;
 
            // 💰 Status pembayaran (lebih fleksibel)
             $statusPembayaran = match ($statusPesanan) {
-                'Belum' => $faker->boolean(20) ? 'Lunas' : 'Belum Lunas', // 20% sudah bayar di awal
-                'Dikerjakan' => $faker->boolean(50) ? 'Lunas' : 'Belum Lunas', // 50% sudah bayar
-                'Selesai' => $faker->boolean(80) ? 'Lunas' : 'Belum Lunas', // 80% sudah bayar
+                'Pending' => $faker->boolean(20) ? 'Lunas' : 'Belum Lunas',
+                'Proses' => $faker->boolean(50) ? 'Lunas' : 'Belum Lunas',
+                'Selesai' => $faker->boolean(80) ? 'Lunas' : 'Belum Lunas',
                 default => 'Belum Lunas',
             };
 
-            // Metode pembayaran dan tanggal jika sudah lunas
             $metodePembayaran = $statusPembayaran === 'Lunas'
-                ? $faker->randomElement(['Tunai', 'Qris'])
+                ? $faker->randomElement(['Cash', 'Transfer', 'E-wallet'])
                 : null;
 
             $tanggalPembayaran = $statusPembayaran === 'Lunas'

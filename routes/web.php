@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PesananController;
+use App\Http\Controllers\PengeluaranController;
 
 // ========================================
 // AUTH ROUTES (Login & Register)
@@ -11,8 +15,13 @@ Route::get('/', function () {
 
 Route::post('/login', function () {
     // Dummy login - redirect ke dashboard
-    return redirect()->route('dashboard');
+    return redirect()->route('dashboard.index');
 })->name('login.submit');
+
+Route::get('/login-as-admin', function() {
+    Auth::loginUsingId(1); // ID admin hasil seeder atau tinker
+    return redirect()->route('dashboard.index');
+});
 
 Route::get('/register', function () {
     return view('auth.register');
@@ -26,36 +35,35 @@ Route::post('/register', function () {
 // ========================================
 // DASHBOARD
 // ========================================
-Route::get('/dashboard', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+Route::get('/dashboard/pesanan', [DashboardController::class, 'getPesanan'])->name('dashboard.pesanan');
+Route::get('/dashboard/pengeluaran', [DashboardController::class, 'getPengeluaran'])->name('dashboard.pengeluaran');
 
 // ========================================
 // MANAJEMEN PESANAN
 // ========================================
-Route::get('/daftar-pesanan', function () {
-    return view('manajemen_pesanan.pesanan');
-})->name('pesanan.daftar');
+Route::prefix('pesanan')->name('pesanan.')->group(function () {
+    Route::get('/', [PesananController::class, 'index'])->name('index'); // /pesanan
+    Route::get('/daftar', [PesananController::class, 'index'])->name('daftar'); // alias untuk sidebar
+    Route::get('/tambah', [PesananController::class, 'create'])->name('tambah'); // /pesanan/tambah
+    Route::post('/', [PesananController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [PesananController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PesananController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PesananController::class, 'destroy'])->name('destroy');
+});
 
-Route::get('/manajemen-pesanan/tambah', function () {
-    return view('manajemen_pesanan.tambah_pesanan');
-})->name('pesanan.tambah');
 
 // ========================================
 // MANAJEMEN KEUANGAN
 // ========================================
-Route::get('/keuangan/tambah-pengeluaran', function () {
-    return view('keuangan.tambah_pengeluaran');
-})->name('keuangan.tambah');
-
-Route::post('/keuangan/tambah-pengeluaran', function () {
-    // Dummy submit - redirect kembali dengan pesan sukses
-    return redirect()->route('keuangan.tambah')->with('success', 'Data pengeluaran berhasil ditambahkan!');
-})->name('keuangan.store');
-
-Route::get('/keuangan/laporan', function () {
-    return view('keuangan.laporan_keuangan');
-})->name('keuangan.laporan');
+Route::prefix('keuangan')->group(function () {
+    Route::get('/tambah-pengeluaran', [PengeluaranController::class, 'create'])->name('keuangan.tambah');
+    Route::post('/tambah-pengeluaran', [PengeluaranController::class, 'store'])->name('keuangan.store');
+    Route::get('/laporan', [PengeluaranController::class, 'index'])->name('keuangan.laporan');
+    Route::get('/pengeluaran/{id}/edit', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
+    Route::put('/pengeluaran/{id}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
+    Route::delete('/pengeluaran/{id}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
+});
 
 // ========================================
 // PROFIL ADMIN

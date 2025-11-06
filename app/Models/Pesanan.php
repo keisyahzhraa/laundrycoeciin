@@ -20,6 +20,7 @@ class Pesanan extends Model
         'id_user',
         'nama_pelanggan',
         'nomor_telephone',
+        'barang_laundry',
         'berat_cucian',
         'jenis_layanan',
         'tanggal_pesanan',
