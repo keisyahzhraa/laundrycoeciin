@@ -29,7 +29,7 @@
         <!-- Menu Items -->
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-custom">
             <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="menu-item relative group flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
+            <a href="{{ route('dashboard.index') }}" class="menu-item relative group flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 {{ request()->routeIs('dashboard.index') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
                 <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">
                     <svg class="w-5 h-5 transition-transform group-hover:scale-110 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
@@ -328,7 +328,7 @@
                 sidebar.classList.toggle('sidebar-collapsed');
                 const icon = this.querySelector('svg');
                 icon.classList.toggle('rotate-180');
-                
+
                 const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
                 localStorage.setItem('sidebarCollapsed', isCollapsed);
 
@@ -408,7 +408,7 @@
 
         if (submenu && icon) {
             const isHidden = submenu.classList.contains('hidden');
-            
+
             if (isHidden) {
                 submenu.classList.remove('hidden', 'max-h-0', 'opacity-0');
                 submenu.classList.add('max-h-96', 'opacity-100');
@@ -419,7 +419,7 @@
                     submenu.classList.add('hidden');
                 }, 300);
             }
-            
+
             icon.classList.toggle('rotate-180');
         }
     }

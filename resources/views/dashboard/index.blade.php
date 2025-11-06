@@ -17,7 +17,7 @@
     <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow flex items-start justify-between">
       <div>
         <p class="text-base text-gray-600 mb-4">Total Pendapatan</p>
-        <h3 class="text-4xl font-bold text-gray-900">Rp 6.000.000</h3>
+        <h3 class="text-4xl font-bold text-gray-900" data-stat="pendapatan">Rp 0</h3>
       </div>
       <div class="bg-sky-400 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,7 +30,7 @@
     <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow flex items-start justify-between">
       <div>
         <p class="text-base text-gray-600 mb-4">Total Pengeluaran</p>
-        <h3 class="text-4xl font-bold text-gray-900">Rp 300.000</h3>
+        <h3 class="text-4xl font-bold text-gray-900" data-stat="pengeluaran">Rp 0</h3>
       </div>
       <div class="bg-sky-100 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,7 +43,7 @@
     <div class="bg-white rounded-2xl p-6 shadow flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-600 mb-3">Total<br>Pesanan</p>
-        <h4 class="text-4xl font-bold text-gray-900">62</h4>
+        <h4 class="text-4xl font-bold text-gray-900" data-stat="pesanan">0</h4>
       </div>
       <div class="bg-indigo-100 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +56,7 @@
     <div class="bg-white rounded-2xl p-6 shadow flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-600 mb-3">Total<br>Selesai</p>
-        <h4 class="text-4xl font-bold text-gray-900">30</h4>
+        <h4 class="text-4xl font-bold text-gray-900" data-stat="selesai">0</h4>
       </div>
       <div class="bg-green-100 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +69,7 @@
     <div class="bg-white rounded-2xl p-6 shadow flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-600 mb-3">Total<br>Dikerjakan</p>
-        <h4 class="text-4xl font-bold text-gray-900">12</h4>
+        <h4 class="text-4xl font-bold text-gray-900" data-stat="dikerjakan">0</h4>
       </div>
       <div class="bg-yellow-100 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +82,7 @@
     <div class="bg-white rounded-2xl p-6 shadow flex justify-between items-start">
       <div>
         <p class="text-sm text-gray-600 mb-3">Total Belum<br>Dikerjakan</p>
-        <h4 class="text-4xl font-bold text-gray-900">20</h4>
+        <h4 class="text-4xl font-bold text-gray-900" data-stat="belum">0</h4>
       </div>
       <div class="bg-red-100 p-3 rounded-xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,7 +98,7 @@
     <canvas id="chartPendapatan"></canvas>
   </div>
 
-  <!-- List Pesanan (Pesanan Mendekati Deadline) -->
+  <!-- List Pesanan Mendekati Deadline -->
   <div class="bg-white rounded-2xl p-6 shadow">
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
@@ -109,15 +109,13 @@
         </div>
         <div>
           <h3 class="text-xl font-semibold text-gray-800">List Pesanan Mendekati Deadline</h3>
-          <p class="text-sm text-gray-500">Total 6 pesanan</p>
+          <p class="text-sm text-gray-500">Total {{ $pesananDeadline->count() }} pesanan</p>
         </div>
-      </div>
-      <div class="flex items-center gap-3">
       </div>
     </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-left">
+      <table class="w-full text-left" id="tableDeadline">
         <thead>
           <tr class="bg-gray-50">
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Nama Pelanggan</th>
@@ -131,120 +129,72 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Kosiyah</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Pakaian</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">Regular</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">10 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 10,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm font-medium">Belum</span>
-            </td>
-          </tr>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Fallanan</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Sepatu</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">Regular</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">10 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 10,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm font-medium">Disetrika</span>
-            </td>
-          </tr>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Puti</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Celana</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4 text-gray-600">12/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">Regular</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">10 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 10,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-medium">Selesai</span>
-            </td>
-          </tr>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Budi Santoso</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Bed Cover</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">13/05/25</td>
-            <td class="px-4 py-4 text-gray-600">15/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-medium">Express</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">5 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 15,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-medium">Dicuci</span>
-            </td>
-          </tr>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Siti Nurhaliza</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Selimut</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">14/05/25</td>
-            <td class="px-4 py-4 text-gray-600">16/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">Regular</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">8 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 12,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-sm font-medium">Dijemur</span>
-            </td>
-          </tr>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-4 text-gray-800 font-medium">Ahmad Dahlan</td>
-            <td class="px-4 py-4">
-              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">Karpet</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">15/05/25</td>
-            <td class="px-4 py-4 text-gray-600">18/05/25</td>
-            <td class="px-4 py-4">
-              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">Regular</span>
-            </td>
-            <td class="px-4 py-4 text-gray-600">15 kg</td>
-            <td class="px-4 py-4 text-gray-600">Rp 25,000</td>
-            <td class="px-4 py-4">
-              <span class="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg text-sm font-medium">Belum</span>
-            </td>
-          </tr>
+          {{-- Baris akan diisi lewat JS --}}
         </tbody>
       </table>
     </div>
+    <!-- Modal -->
+<div id="modalPesanan" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-2xl w-11/12 md:w-3/4 lg:w-1/2 p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 id="modalTitle" class="text-xl font-semibold text-gray-800">Daftar Pesanan</h3>
+      <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left" id="modalTable">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Nama Pelanggan</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Barang Laundry</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Masuk</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Selesai</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Jenis</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Berat</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Harga</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
   </div>
 </main>
 @endsection
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Statistik
+  const stats = {
+    pendapatan: {{ $totalPendapatan }},
+    pengeluaran: {{ $totalPengeluaran }},
+    pesanan: {{ $totalPesanan }},
+    selesai: {{ $totalSelesai }},
+    dikerjakan: {{ $totalDikerjakan }},
+    belum: {{ $totalBelumDikerjakan }}
+  };
+
+  Object.keys(stats).forEach(key => {
+    const el = document.querySelector(`[data-stat="${key}"]`);
+    if(el) {
+      el.textContent = (key.includes('pendapatan') || key.includes('pengeluaran'))
+        ? 'Rp ' + stats[key].toLocaleString()
+        : stats[key];
+    }
+  });
+
   // Chart Pendapatan
   const ctx = document.getElementById('chartPendapatan');
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['1', '5', '10', '15', '20', '25', '30'],
+      labels: @json($labels),
       datasets: [{
-        label: 'Pendapatan (Ribu)',
-        data: [20, 40, 60, 80, 50, 90, 70],
+        label: 'Pendapatan (Rp)',
+        data: @json($chartData),
         borderColor: '#0ea5e9',
         backgroundColor: 'rgba(14,165,233,0.2)',
         tension: 0.4,
@@ -259,29 +209,48 @@
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top'
-        }
-      },
+      plugins: { legend: { display: true, position: 'top' } },
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return 'Rp ' + value + 'k';
-            }
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Tanggal'
-          }
-        }
+        y: { beginAtZero: true, ticks: { callback: value => 'Rp ' + value.toLocaleString() } },
+        x: { title: { display: true, text: 'Tanggal' } }
       }
     }
   });
+
+    // Tabel Pesanan Mendekati Deadline
+    // Fungsi format tanggal dd-mm-yyyy
+    const formatDate = dateStr => {
+        const d = new Date(dateStr);
+        const day = String(d.getDate()).padStart(2,'0');
+        const month = String(d.getMonth()+1).padStart(2,'0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
+
+    // Tabel Pesanan Mendekati Deadline
+    const tbody = document.querySelector('#tableDeadline tbody');
+    const pesananDeadline = @json($pesananDeadline);
+
+    tbody.innerHTML = ''; // Kosongkan dulu
+
+    pesananDeadline.forEach(p => {
+        const tr = document.createElement('tr');
+        let statusClass = p.status_pesanan == 'Selesai' ? 'green' : (p.status_pesanan == 'Dikerjakan' ? 'yellow' : 'red');
+        tr.classList.add('hover:bg-gray-50');
+        tr.innerHTML = `
+        <td class="px-4 py-4 text-gray-800 font-medium">${p.nama_pelanggan}</td>
+        <td class="px-4 py-4"><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">${p.barang_laundry}</span></td>
+        <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_pesanan)}</td>
+        <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_selesai)}</td>
+        <td class="px-4 py-4"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">${p.jenis_layanan}</span></td>
+        <td class="px-4 py-4 text-gray-600">${parseFloat(p.berat_cucian).toFixed(2)} kg</td>
+        <td class="px-4 py-4 text-gray-600">Rp ${Number(p.total_harga).toLocaleString()}</td>
+        <td class="px-4 py-4"><span class="bg-${statusClass}-100 text-${statusClass}-700 px-3 py-1.5 rounded-lg text-sm font-medium">${p.status_pesanan}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+
+});
 </script>
 @endpush

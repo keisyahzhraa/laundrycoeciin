@@ -1,19 +1,24 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Pengeluaran | Coeciin')
+@section('title', isset($pengeluaran) ? 'Edit Pengeluaran | Coeciin' : 'Tambah Pengeluaran | Coeciin')
 @section('page_title', 'Manajemen Keuangan')
 
 @section('content')
+@php
+    use Carbon\Carbon;
+@endphp
 <main class="p-8 min-h-screen" style="background-color: #EFFCFF;">
   <!-- Header -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-800">Manajemen Keuangan</h1>
-    <p class="text-gray-500 text-sm mt-1">Tambah data pengeluaran baru ke sistem</p>
+    <p class="text-gray-500 text-sm mt-1">
+      {{ isset($pengeluaran) ? 'Ubah data pengeluaran yang sudah ada' : 'Tambah data pengeluaran baru ke sistem' }}
+    </p>
   </div>
-  
+
   <!-- Form Card -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    
+
     <!-- Card Header -->
     <div class="px-6 py-5 flex items-center space-x-3 border-b border-gray-200">
       <div class="bg-blue-500 rounded-xl p-2.5">
@@ -21,13 +26,23 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       </div>
-      <h2 class="text-xl font-bold text-gray-800">Tambah Pengeluaran</h2>
+      <h2 class="text-xl font-bold text-gray-800">
+        {{ isset($pengeluaran) ? 'Edit Pengeluaran' : 'Tambah Pengeluaran' }}
+      </h2>
     </div>
 
     <!-- Form Content -->
-    <form action="{{ route('keuangan.store') }}" method="POST" enctype="multipart/form-data" class="p-8">
+    <form
+      action="{{ isset($pengeluaran) ? route('pengeluaran.update', $pengeluaran->id_pengeluaran) : route('keuangan.store') }}"
+      method="POST"
+      enctype="multipart/form-data"
+      class="p-8"
+    >
       @csrf
-      
+      @if(isset($pengeluaran))
+        @method('PUT')
+      @endif
+
       <!-- Section: Informasi Utama -->
       <div class="mb-8">
         <div class="flex items-center space-x-3 mb-6">
@@ -39,16 +54,17 @@
           </div>
           <h3 class="text-lg font-bold text-gray-800">Informasi Utama</h3>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <!-- Tanggal Pengeluaran -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Tanggal Pengeluaran <span class="text-red-500">*</span>
             </label>
-            <input 
-              type="date" 
+            <input
+              type="date"
               name="tanggal_pengeluaran"
+              value="{{ old('tanggal_pengeluaran', isset($pengeluaran) ? Carbon::parse($pengeluaran->tanggal)->format('Y-m-d') : '') }}"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all"
               required>
           </div>
@@ -58,10 +74,11 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Nominal Pengeluaran <span class="text-red-500">*</span>
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="nominal_pengeluaran"
-              placeholder="Masukkan nominal pengeluaran" 
+              value="{{ old('nominal_pengeluaran', $pengeluaran->nominal ?? '') }}"
+              placeholder="Masukkan nominal pengeluaran"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400"
               required>
           </div>
@@ -71,17 +88,19 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Kategori Pengeluaran <span class="text-red-500">*</span>
             </label>
-            <select 
+            <select
               name="kategori_pengeluaran"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all text-gray-700"
               required>
+              @php
+                  $kategori = ['operasional','bahan_baku','gaji','utilitas','maintenance','lainnya'];
+              @endphp
               <option value="">Pilih kategori pengeluaran</option>
-              <option value="operasional">Operasional</option>
-              <option value="bahan_baku">Bahan Baku</option>
-              <option value="gaji">Gaji Karyawan</option>
-              <option value="utilitas">Utilitas (Listrik, Air, dll)</option>
-              <option value="maintenance">Maintenance</option>
-              <option value="lainnya">Lainnya</option>
+              @foreach($kategori as $k)
+                  <option value="{{ $k }}" {{ old('kategori_pengeluaran', $pengeluaran->kategori ?? '') == $k ? 'selected' : '' }}>
+                      {{ ucfirst(str_replace('_', ' ', $k)) }}
+                  </option>
+              @endforeach
             </select>
           </div>
 
@@ -90,16 +109,19 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Metode Pembayaran <span class="text-red-500">*</span>
             </label>
-            <select 
+            <select
               name="metode_pembayaran"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all text-gray-700"
               required>
+              @php
+                  $metode = ['tunai','transfer','e-wallet','kartu_debit','kartu_kredit'];
+              @endphp
               <option value="">Pilih metode pembayaran</option>
-              <option value="tunai">Tunai</option>
-              <option value="transfer">Transfer Bank</option>
-              <option value="e-wallet">E-Wallet</option>
-              <option value="kartu_debit">Kartu Debit</option>
-              <option value="kartu_kredit">Kartu Kredit</option>
+              @foreach($metode as $m)
+                  <option value="{{ $m }}" {{ old('metode_pembayaran', $pengeluaran->metode_pembayaran ?? '') == $m ? 'selected' : '' }}>
+                      {{ ucfirst(str_replace('_', ' ', $m)) }}
+                  </option>
+              @endforeach
             </select>
           </div>
         </div>
@@ -118,17 +140,18 @@
           </div>
           <h3 class="text-lg font-bold text-gray-800">Detail Tambahan</h3>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Penerima -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Dibayarkan Kepada / Penerima <span class="text-red-500">*</span>
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="penerima"
-              placeholder="Masukkan nama penerima" 
+              value="{{ old('penerima', $pengeluaran->penerima ?? '') }}"
+              placeholder="Masukkan nama penerima"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400"
               required>
           </div>
@@ -138,27 +161,35 @@
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Keterangan Pengeluaran <span class="text-gray-400 text-xs font-normal">(opsional)</span>
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="keterangan"
-              placeholder="Tuliskan keterangan pengeluaran" 
+              value="{{ old('keterangan', $pengeluaran->keterangan ?? '') }}"
+              placeholder="Tuliskan keterangan pengeluaran"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400">
           </div>
 
           <!-- Bukti Lampiran -->
           <div class="md:col-span-2">
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              Bukti / Lampiran <span class="text-red-500">*</span>
+              Bukti / Lampiran <span class="text-gray-400 text-xs font-normal">(opsional)</span>
             </label>
+
+            @if(isset($pengeluaran) && $pengeluaran->bukti_pengeluaran)
+              <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">Bukti Sebelumnya:</p>
+                <img src="{{ $pengeluaran->bukti_pengeluaran }}" alt="Bukti Lama" class="w-40 rounded-lg border">
+              </div>
+            @endif
+
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
-              <input 
-                type="file" 
+              <input
+                type="file"
                 name="bukti_lampiran"
                 id="file-upload"
                 class="hidden"
                 accept="image/*,.pdf"
-                onchange="updateFileName(this)"
-                required>
+                onchange="updateFileName(this)">
               <label for="file-upload" class="cursor-pointer">
                 <div class="flex flex-col items-center">
                   <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,14 +207,14 @@
 
       <!-- Buttons -->
       <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
-        <a href="{{ route('dashboard') }}" 
+        <a href="{{ route('keuangan.laporan') }}"
            class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-all">
           Batal
         </a>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-all shadow-sm hover:shadow-md">
-          Simpan Pengeluaran
+          {{ isset($pengeluaran) ? 'Perbarui Pengeluaran' : 'Simpan Pengeluaran' }}
         </button>
       </div>
     </form>
