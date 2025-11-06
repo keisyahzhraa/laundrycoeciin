@@ -38,6 +38,23 @@ class Pesanan extends Model
         'tanggal_pembayaran' => 'datetime',
     ];
 
+    // ⬇️ Tambahkan function ini di bawah sini
+    public function setTotalHargaAttribute($value)
+    {
+        if (is_null($value)) {
+            $hargaPerKg = match ($this->jenis_layanan) {
+                'Regular' => 7000,
+                'Express' => 10000,
+                'Super Express/Kilat' => 15000,
+                default => 7000,
+            };
+
+            $this->attributes['total_harga'] = $this->berat_cucian * $hargaPerKg;
+        } else {
+            $this->attributes['total_harga'] = $value;
+        }
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
