@@ -19,7 +19,9 @@ class UserSeeder extends Seeder
 
         // 👤 Admin utama
         User::create([
-            'name' => 'Admin Laundry',
+            'username' => 'adminlaundry',
+            'nama_depan' => 'Admin',
+            'nama_belakang' => 'Laundry',
             'email' => 'admin@laundrycoeciin.com',
             'password' => Hash::make('admin123'), // pastikan terenkripsi
         ]);
@@ -27,7 +29,9 @@ class UserSeeder extends Seeder
         // 👥 Tambahan user dummy (opsional)
         for ($i = 0; $i < 3; $i++) {
             User::create([
-                'name' => $faker->name(),
+                'username' => $faker->unique()->userName(),
+                'nama_depan' => $faker->firstName(),
+                'nama_belakang' => $faker->lastName(),
                 'email' => $faker->unique()->safeEmail(),
                 'password' => Hash::make('password'),
             ]);

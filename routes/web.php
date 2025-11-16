@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\PengeluaranController;
@@ -9,40 +10,31 @@ use App\Http\Controllers\PengeluaranController;
 // ========================================
 // AUTH ROUTES (Login & Register)
 // ========================================
-Route::get('/', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/login', function () {
-    // Dummy login - redirect ke dashboard
-    return redirect()->route('dashboard.index');
-})->name('login.submit');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/login-as-admin', function() {
-    Auth::loginUsingId(1); // ID admin hasil seeder atau tinker
-    return redirect()->route('dashboard.index');
-});
-
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
-
-Route::post('/register', function () {
-    // Dummy register - redirect ke login
-    return redirect()->route('login');
-})->name('register.submit');
+// ========================================
+// LUPA PASSWORD
+// ========================================
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // ========================================
 // DASHBOARD
 // ========================================
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-Route::get('/dashboard/pesanan', [DashboardController::class, 'getPesanan'])->name('dashboard.pesanan');
-Route::get('/dashboard/pengeluaran', [DashboardController::class, 'getPengeluaran'])->name('dashboard.pengeluaran');
+Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('index');
+    Route::get('/pesanan', [DashboardController::class, 'getPesanan'])->name('pesanan');
+    Route::get('/pengeluaran', [DashboardController::class, 'getPengeluaran'])->name('pengeluaran');
+});
 
 // ========================================
 // MANAJEMEN PESANAN
 // ========================================
-Route::prefix('pesanan')->name('pesanan.')->group(function () {
+Route::middleware('auth')->prefix('pesanan')->name('pesanan.')->group(function () {
     Route::get('/', [PesananController::class, 'index'])->name('index'); // /pesanan
     Route::get('/daftar', [PesananController::class, 'index'])->name('daftar'); // alias untuk sidebar
     Route::get('/tambah', [PesananController::class, 'create'])->name('tambah'); // /pesanan/tambah
@@ -56,7 +48,7 @@ Route::prefix('pesanan')->name('pesanan.')->group(function () {
 // ========================================
 // MANAJEMEN KEUANGAN
 // ========================================
-Route::prefix('keuangan')->group(function () {
+Route::middleware('auth')->prefix('keuangan')->group(function () {
     Route::get('/tambah-pengeluaran', [PengeluaranController::class, 'create'])->name('keuangan.tambah');
     Route::post('/tambah-pengeluaran', [PengeluaranController::class, 'store'])->name('keuangan.store');
     Route::get('/laporan', [PengeluaranController::class, 'index'])->name('keuangan.laporan');
@@ -68,13 +60,12 @@ Route::prefix('keuangan')->group(function () {
 // ========================================
 // PROFIL ADMIN
 // ========================================
-Route::get('/admin/profile', function () {
-    return view('admin.admin_profile');
-})->name('admin.profile');
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/profile', [AuthController::class, 'editProfile'])->name('profile');
+    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+});
 
 // ========================================
 // LOGOUT
 // ========================================
-Route::post('/logout', function () {
-    return redirect()->route('login');
-})->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
