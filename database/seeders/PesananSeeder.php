@@ -48,7 +48,7 @@ class PesananSeeder extends Seeder
                 : null;
 
             // Jenis layanan dan berat
-            $jenisLayanan = $faker->randomElement(['Regular', 'Express', 'Super Express/Kilat']);
+            $jenisLayanan = $faker->randomElement(['Satuan', 'Regular', 'Express', 'Super Express/Kilat']);
             $berat = $faker->randomFloat(2, 1, 10); // 1–10 kg
 
             // harga berdasarkan jenis layanan (contoh logika sederhana)

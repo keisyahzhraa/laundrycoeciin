@@ -10,22 +10,28 @@ use App\Http\Controllers\PengeluaranController;
 // ========================================
 // AUTH ROUTES (Login & Register)
 // ========================================
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::prefix('register')->name('register.')->group(function () {
+Route::get('/', [AuthController::class, 'showRegisterForm']);
+Route::post('/', [AuthController::class, 'register'])->name('submit');
+});
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('login')->name('login.')->group(function () {
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/', [AuthController::class, 'login'])->name('submit');
+});
 
 // ========================================
 // LUPA PASSWORD
 // ========================================
-Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+Route::prefix('password')->name('password.')->group(function () {
+Route::get('/forgot', [AuthController::class, 'showForgotPasswordForm'])->name('request');
+Route::post('/reset', [AuthController::class, 'resetPassword'])->name('update');
+});
 
 // ========================================
 // DASHBOARD
 // ========================================
-Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(function () {
+Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/pesanan', [DashboardController::class, 'getPesanan'])->name('pesanan');
     Route::get('/pengeluaran', [DashboardController::class, 'getPengeluaran'])->name('pengeluaran');
@@ -34,11 +40,10 @@ Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(functi
 // ========================================
 // MANAJEMEN PESANAN
 // ========================================
-Route::middleware('auth')->prefix('pesanan')->name('pesanan.')->group(function () {
-    Route::get('/', [PesananController::class, 'index'])->name('index'); // /pesanan
-    Route::get('/daftar', [PesananController::class, 'index'])->name('daftar'); // alias untuk sidebar
+Route::prefix('pesanan')->name('pesanan.')->group(function () {
+    Route::get('/', [PesananController::class, 'index'])->name('daftar'); // /pesanan
     Route::get('/tambah', [PesananController::class, 'create'])->name('tambah'); // /pesanan/tambah
-    Route::post('/', [PesananController::class, 'store'])->name('store');
+    Route::post('/tambah', [PesananController::class, 'store'])->name('store');
     Route::get('/{id}/edit', [PesananController::class, 'edit'])->name('edit');
     Route::put('/{id}', [PesananController::class, 'update'])->name('update');
     Route::delete('/{id}', [PesananController::class, 'destroy'])->name('destroy');
@@ -46,21 +51,21 @@ Route::middleware('auth')->prefix('pesanan')->name('pesanan.')->group(function (
 
 
 // ========================================
-// MANAJEMEN KEUANGAN
+// MANAJEMEN PENGELUARAN
 // ========================================
-Route::middleware('auth')->prefix('keuangan')->group(function () {
-    Route::get('/tambah-pengeluaran', [PengeluaranController::class, 'create'])->name('keuangan.tambah');
-    Route::post('/tambah-pengeluaran', [PengeluaranController::class, 'store'])->name('keuangan.store');
-    Route::get('/laporan', [PengeluaranController::class, 'index'])->name('keuangan.laporan');
-    Route::get('/pengeluaran/{id}/edit', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
-    Route::put('/pengeluaran/{id}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
-    Route::delete('/pengeluaran/{id}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
+Route::prefix('keuangan')->name('keuangan.')->group(function () {
+    Route::get('/tambah', [PengeluaranController::class, 'create'])->name('tambah');
+    Route::post('/tambah', [PengeluaranController::class, 'store'])->name('store');
+    Route::get('/', [PengeluaranController::class, 'index'])->name('daftar');
+    Route::get('/{id}/edit', [PengeluaranController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PengeluaranController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PengeluaranController::class, 'destroy'])->name('destroy');
 });
 
 // ========================================
 // PROFIL ADMIN
 // ========================================
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/profile', [AuthController::class, 'editProfile'])->name('profile');
     Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
 });
