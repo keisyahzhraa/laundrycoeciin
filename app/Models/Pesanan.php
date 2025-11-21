@@ -22,7 +22,7 @@ class Pesanan extends Model
         'nomor_telephone',
         'barang_laundry',
         'berat_cucian',
-        'jenis_layanan',
+        'id_layanan',
         'tanggal_pesanan',
         'tanggal_selesai',
         'keterangan',
@@ -43,5 +43,10 @@ class Pesanan extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function layanan()
+    {
+        return $this->belongsTo(HargaLayanan::class, 'id_layanan');
     }
 }

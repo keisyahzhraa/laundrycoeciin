@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\HargaLayananController;
 
 // ========================================
 // AUTH ROUTES (Login & Register)
@@ -47,8 +48,11 @@ Route::prefix('pesanan')->name('pesanan.')->group(function () {
     Route::get('/{id}/edit', [PesananController::class, 'edit'])->name('edit');
     Route::put('/{id}', [PesananController::class, 'update'])->name('update');
     Route::delete('/{id}', [PesananController::class, 'destroy'])->name('destroy');
+    Route::post('/hitung-harga', [PesananController::class, 'hitungHarga'])->name('hitung_harga');
 });
 
+Route::put('/layanan/update', [HargaLayananController::class, 'update'])
+    ->name('layanan.update');
 
 // ========================================
 // MANAJEMEN PENGELUARAN

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
+use App\Models\HargaLayanan;
 use Illuminate\Support\Facades\Auth;
 
 class PesananController extends Controller
@@ -11,7 +12,8 @@ class PesananController extends Controller
     // Tampilkan halaman tambah pesanan
     public function create()
     {
-        return view('manajemen_pesanan.tambah_pesanan');
+        $layanans = \App\Models\HargaLayanan::all();
+        return view('manajemen_pesanan.tambah_pesanan', compact('layanans'));
     }
 
     // Simpan data pesanan baru
@@ -23,12 +25,12 @@ class PesananController extends Controller
             'nomor_telephone' => 'nullable|string|max:20',
             'barang_laundry' => 'required|in:pakaian,sepatu,celana',
             'berat_cucian' => 'required|numeric|min:0.1',
-            'jenis_layanan' => 'required|in:Satuan,Regular,Express,Super Express/Kilat',
+            'id_layanan' => 'required|exists:harga_layanans,id_layanan',
             'tanggal_pesanan' => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_pesanan',
             'keterangan' => 'nullable|string',
             'status_pesanan' => 'required|in:Pending,Proses,Selesai',
-            'total_harga' => 'required|numeric|min:0',
+            'total_harga' => 'required|numeric|min:1',
             'metode_pembayaran' => 'nullable|in:Cash,Transfer,E-wallet',
             'status_pembayaran' => 'required|in:Belum Lunas,Lunas',
             'tanggal_pembayaran' => 'nullable|date',
@@ -36,6 +38,11 @@ class PesananController extends Controller
 
         // Jika user login, ambil id_user
         $validated['id_user'] = Auth::id() ?? 1;
+
+        // Jika pembayaran belum lunas, hapus tanggal pembayaran
+        if ($validated['status_pembayaran'] === 'Belum Lunas') {
+            $validated['tanggal_pembayaran'] = null;
+        }
 
         // Simpan data ke database
         Pesanan::create($validated);
@@ -84,7 +91,8 @@ class PesananController extends Controller
     public function edit($id)
     {
         $pesanan = Pesanan::findOrFail($id);
-        return view('manajemen_pesanan.tambah_pesanan', compact('pesanan'));
+        $layanans = HargaLayanan::all();
+        return view('manajemen_pesanan.tambah_pesanan', compact('pesanan', 'layanans'));
     }
 
 
@@ -98,15 +106,15 @@ class PesananController extends Controller
             'nomor_telephone' => 'nullable|string|max:20',
             'barang_laundry' => 'required|in:pakaian,sepatu,celana',
             'berat_cucian' => 'required|numeric|min:0.1',
-            'jenis_layanan' => 'required|in:Satuan,Regular,Express,Super Express/Kilat',
+            'id_layanan' => 'required|exists:harga_layanans,id_layanan',
             'tanggal_pesanan' => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_pesanan',
             'keterangan' => 'nullable|string',
             'status_pesanan' => 'required|in:Pending,Proses,Selesai',
-            'total_harga' => 'required|numeric|min:0',
+            'total_harga' => 'required|numeric|min:1',
             'metode_pembayaran' => 'nullable|in:Cash,Transfer,E-wallet',
             'status_pembayaran' => 'required|in:Belum Lunas,Lunas',
-            'tanggal_pembayaran' => 'nullable|date|required_if:status_pembayaran,Lunas',
+            'tanggal_pembayaran' => 'nullable|date',
         ]);
 
         // Jika pembayaran belum lunas, hapus tanggal pembayaran
@@ -128,4 +136,19 @@ class PesananController extends Controller
         return redirect()->route('pesanan.daftar')->with('success', 'Pesanan berhasil dihapus!');
     }
 
+    public function hitungHarga(Request $request)
+    {
+        $request->validate([
+            'id_layanan' => 'required|integer|exists:harga_layanans,id_layanan',
+            'berat_cucian' => 'required|numeric|min:0.1'
+        ]);
+
+        $layanan = HargaLayanan::findOrFail($request->id_layanan);
+        $total = $request->berat_cucian * $layanan->harga_per_kg;
+
+        return response()->json([
+            'success' => true,
+            'total_harga' => $total,
+        ]);
+    }
 }

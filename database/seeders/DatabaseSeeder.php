@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
         // Jalankan seeder masing-masing
         $this->call([
             UserSeeder::class,
+            HargaLayananSeeder::class,
             PesananSeeder::class,
             PengeluaranSeeder::class,
         ]);

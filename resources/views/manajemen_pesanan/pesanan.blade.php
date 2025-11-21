@@ -30,7 +30,15 @@
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Manajemen Pesanan</h1>
-                <p class="text-sm text-gray-500">Kelola semua pesanan laundry Anda</p>
+                <p class="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-xl flex items-center gap-2">
+    <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 2a6 6 0 016 6v3l1.293 1.293a1 1 0 01-1.414 1.414L15 12.414V8a5 5 0 10-10 0v4.414l-.879.879a1 1 0 01-1.414-1.414L4 11V8a6 6 0 016-6z"/>
+        <path d="M5 15a5 5 0 0010 0h-2a3 3 0 11-6 0H5z"/>
+    </svg>
+    Kelola pesanan laundry Anda dengan cepat, rapi, dan efisien!
+</p>
+
+
             </div>
 
             <!-- Notifikasi sukses -->
@@ -58,19 +66,25 @@
                         </div>
                         <div>
                             <h2 class="text-xl md:text-2xl font-bold text-gray-800">List Pesanan</h2>
-                            <p class="text-sm text-gray-500 mt-0.5">Total {{ $pesanans->count() }} pesanan</p>
+                            <p class="text-sm text-gray-500 mt-0.5">
+                                Total {{ $pesanans->where('status_pesanan', '!=', 'Selesai')->count() }} pesanan belum selesai
+                            </p>
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
                         {{-- <form method="GET" action="{{ route('pesanan.daftar') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto"> --}}
                         <!-- Filter Bulan & Tahun -->
                         <form id="filterForm" method="GET" action="{{ route('pesanan.daftar') }}">
+                            <div class="mb-1">
+                                <label class="text-xs font-semibold text-gray-600">Filter Bulan & Tahun</label>
+                            </div>
+
                             <div class="relative w-full">
                                 <input type="text"
                                     id="monthYearPicker"
                                     name="filter_bulan_tahun"
                                     placeholder="Pilih Bulan & Tahun"
-                                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer"
+                                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm cursor-pointer focus:ring-2 focus:ring-blue-400"
                                     value="{{ request('filter_bulan_tahun') ?? '' }}"
                                     readonly>
                             </div>
@@ -96,10 +110,28 @@
                                 <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Barang Laundry</th>
                                 <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Tanggal Masuk</th>
                                 <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Tanggal Selesai</th>
-                                <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Jenis</th>
+                                <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Jenis Layanan</th>
                                 <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Total Berat</th>
                                 <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Total Harga</th>
-                                <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">Status</th>
+                                <th class="px-4 md:px-6 py-4 text-left text-xs font-bold text-gray-700 tracking-wider">
+                                    <form id="filterStatusForm" method="GET" action="{{ route('pesanan.daftar') }}">
+                                        
+                                        <!-- Pertahankan filter bulan-tahun -->
+                                        @if (request('filter_bulan_tahun'))
+                                            <input type="hidden" name="filter_bulan_tahun" value="{{ request('filter_bulan_tahun') }}">
+                                        @endif
+
+                                        <select name="status_pesanan"
+                                            class="text-xs font-semibold bg-white border border-gray-300 rounded-lg px-2 py-1 focus:ring-blue-400 cursor-pointer"
+                                            onchange="document.getElementById('filterStatusForm').submit()">
+
+                                            <option value="">Semua Status</option>
+                                            <option value="Pending" {{ request('status_pesanan')=='Pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="Proses" {{ request('status_pesanan')=='Proses' ? 'selected' : '' }}>Proses</option>
+                                            <option value="Selesai" {{ request('status_pesanan')=='Selesai' ? 'selected' : '' }}>Selesai</option>
+                                        </select>
+                                    </form>
+                                </th>
                                 <th class="px-4 md:px-6 py-4 text-center text-xs font-bold text-gray-700 tracking-wider">Aksi</th>
                             </tr>
                         </thead>
@@ -115,7 +147,19 @@
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ date('d/m/Y', strtotime($pesanan->tanggal_pesanan)) }}</td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $pesanan->tanggal_selesai ? date('d/m/Y', strtotime($pesanan->tanggal_selesai)) : '-' }}</td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg">{{ $pesanan->jenis_layanan }}</span>
+                                        @php
+                                            $jenisLayananColors = [
+                                                ''   => 'bg-blue-100 text-blue-700',
+                                                'Satuan'  => 'bg-green-100 text-green-700',
+                                                'Regular'  => 'bg-yellow-100 text-yellow-700',
+                                                'Express'       => 'bg-purple-100 text-purple-700',
+                                                'Super Express/Kilat'     => 'bg-red-100 text-red-700',
+                                            ];
+                                            $warna = $jenisLayananColors[$pesanan->layanan->jenis_layanan] ?? 'bg-gray-100 text-gray-700';
+                                        @endphp
+                                        <span class="px-3 py-1 text-xs font-medium rounded-lg {{ $warna }}">
+                                            {{ $pesanan->layanan->jenis_layanan ?? '-' }}
+                                        </span>
                                     </td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $pesanan->berat_cucian }} kg</td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
@@ -169,6 +213,60 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div class="mt-6 flex justify-center">
+                        <!-- Pagination custom langsung di view -->
+                        @if ($pesanans->hasPages())
+                            <nav>
+                                <ul class="inline-flex items-center space-x-1">
+
+                                    {{-- Previous --}}
+                                    @if ($pesanans->onFirstPage())
+                                        <li class="px-3 py-2 text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">
+                                            Previous
+                                        </li>
+                                    @else
+                                        <li>
+                                            <a href="{{ $pesanans->previousPageUrl() }}"
+                                            class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-blue-100">
+                                                Previous
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Page Numbers --}}
+                                    @foreach ($pesanans->links()->elements[0] as $page => $url)
+                                        @if ($page == $pesanans->currentPage())
+                                            <li class="px-3 py-2 text-white bg-blue-600 rounded-lg border border-blue-600">
+                                                {{ $page }}
+                                            </li>
+                                        @else
+                                            <li>
+                                                <a href="{{ $url }}"
+                                                class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-blue-100">
+                                                    {{ $page }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Next --}}
+                                    @if ($pesanans->hasMorePages())
+                                        <li>
+                                            <a href="{{ $pesanans->nextPageUrl() }}"
+                                            class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-blue-100">
+                                                Next
+                                            </a>
+                                        </li>
+                                    @else
+                                        <li class="px-3 py-2 text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">
+                                            Next
+                                        </li>
+                                    @endif
+
+                                </ul>
+                            </nav>
+                        @endif
+                    </div>
                 </div>
 
             </div>

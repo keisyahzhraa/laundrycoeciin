@@ -1,0 +1,74 @@
+### ============================
+### 1. GET – Daftar Pesanan
+### ============================
+GET http://localhost:8000/pesanan
+Accept: application/json
+
+
+### ============================
+### 2. GET – Filter Pesanan (bulan/tahun + optional status)
+### ============================
+GET http://localhost:8000/pesanan?filter_bulan_tahun=01/2025&status=Pending
+Accept: application/json
+
+
+### ============================
+### 3. POST – Tambah Pesanan
+### ============================
+POST http://localhost:8000/pesanan/tambah
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nama_pelanggan": "Siti",
+  "nomor_telephone": "08123456789",
+  "barang_laundry": "pakaian",
+  "berat_cucian": 2.5,
+  "jenis_layanan": "SuperExpress_Kilat",
+  "tanggal_pesanan": "2025-01-20",
+  "tanggal_selesai": "2025-01-22",
+  "keterangan": "Test pesanan baru",
+  "status_pesanan": "Pending",
+  "total_harga": 35000,
+  "metode_pembayaran": "Cash",
+  "status_pembayaran": "Belum Lunas",
+  "tanggal_pembayaran": null
+}
+
+
+### ============================
+### 4. GET – Ambil Satu Pesanan untuk Edit
+### ============================
+GET http://localhost:8000/pesanan/1/edit
+Accept: application/json
+
+
+### ============================
+### 5. PUT – Update Pesanan
+### ============================
+PUT http://localhost:8000/pesanan/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nama_pelanggan": "Andi Update",
+  "nomor_telephone": "081233344455",
+  "barang_laundry": "sepatu",
+  "berat_cucian": 3,
+  "jenis_layanan": "SuperExpress_Kilat",
+  "tanggal_pesanan": "2025-01-19",
+  "tanggal_selesai": "2025-01-20",
+  "keterangan": "Update via VS Code",
+  "status_pesanan": "Proses",
+  "total_harga": 45000,
+  "metode_pembayaran": "Transfer",
+  "status_pembayaran": "Lunas",
+  "tanggal_pembayaran": "2025-01-19"
+}
+
+
+### ============================
+### 6. DELETE – Hapus Pesanan
+### ============================
+DELETE http://localhost:8000/pesanan/1
+Accept: application/json

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('barang_laundry', ['pakaian', 'sepatu', 'celana']);
             $table->string('nomor_telephone', 20)->nullable();
             $table->decimal('berat_cucian', 5, 2);
-            $table->enum('jenis_layanan', ['Satuan','Regular', 'Express', 'Super Express/Kilat']);
+            $table->foreignId('id_layanan')->constrained('harga_layanans', 'id_layanan');
             $table->dateTime('tanggal_pesanan');
             $table->dateTime('tanggal_selesai')->nullable();
             $table->text('keterangan')->nullable();
