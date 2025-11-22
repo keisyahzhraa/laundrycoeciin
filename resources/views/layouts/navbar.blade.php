@@ -10,16 +10,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-
-                <!-- Search Bar -->
-                <div class="relative flex-1 max-w-xl">
-                    <input type="text" 
-                           placeholder="Cari pesanan, pelanggan, atau transaksi..." 
-                           class="w-full px-5 py-3 pl-12 bg-gradient-to-r from-gray-50 to-gray-100/50 border border-gray-200/80 rounded-2xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 focus:bg-white transition-all duration-200 hover:border-gray-300">
-                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
             </div>
 
             <!-- Right Side: User Profile Card -->
