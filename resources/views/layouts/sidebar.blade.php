@@ -72,32 +72,35 @@
                 </div>
             </div>
 
-            <!-- Manajemen Keuangan -->
+            <!-- Manajemen Pengeluaran -->
             <div class="mb-1">
-                <button onclick="toggleSubmenu('keuangan')" class="menu-item relative group w-full flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 {{ request()->routeIs('keuangan.*') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
+                <button onclick="toggleSubmenu('pengeluaran')" class="menu-item relative group w-full flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 {{ request()->routeIs('pengeluaran.*') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
                     <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">
-                        <svg class="w-5 h-5 transition-transform group-hover:scale-110 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 12V7a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2v-5z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 12h8"/>
                         </svg>
                     </div>
-                    <span class="font-semibold sidebar-text ml-3 flex-1 text-left whitespace-nowrap">Manajemen Keuangan</span>
-                    <svg id="keuangan-icon" class="w-4 h-4 transition-all duration-300 sidebar-text chevron-icon flex-shrink-0 {{ request()->routeIs('keuangan.*') ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="font-semibold sidebar-text ml-3 flex-1 text-left whitespace-nowrap">Manajemen Pengeluaran</span>
+                    <svg id="pengeluaran-icon" class="w-4 h-4 transition-all duration-300 sidebar-text chevron-icon flex-shrink-0 {{ request()->routeIs('pengeluaran.*') ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                    @if(request()->routeIs('keuangan.*'))
+                    @if(request()->routeIs('pengeluaran.*'))
                         <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-l-full sidebar-text"></div>
                     @endif
-                    <span class="sidebar-tooltip">Manajemen Keuangan</span>
+                    <span class="sidebar-tooltip">Manajemen Pengeluaran</span>
                 </button>
                 <!-- Submenu -->
-                <div id="keuangan-submenu" class="sidebar-submenu ml-8 mt-1 space-y-1 overflow-hidden transition-all duration-300 {{ request()->routeIs('keuangan.*') ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 hidden' }}">
-                    <a href="{{ route('keuangan.tambah') }}" class="flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group {{ request()->routeIs('keuangan.tambah') ? 'text-blue-600 font-semibold bg-blue-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:translate-x-1' }}">
+                <div id="pengeluaran-submenu" class="sidebar-submenu ml-8 mt-1 space-y-1 overflow-hidden transition-all duration-300 {{ request()->routeIs('pengeluaran*') ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 hidden' }}">
+                    <a href="{{ route('pengeluaran.tambah') }}" class="flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group {{ request()->routeIs('pengeluaran.tambah') ? 'text-blue-600 font-semibold bg-blue-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:translate-x-1' }}">
                         <div class="w-1.5 h-1.5 rounded-full bg-current mr-3 transition-all duration-200 group-hover:scale-150"></div>
                         <span>Tambah Pengeluaran</span>
                     </a>
-                    <a href="{{ route('keuangan.daftar') }}" class="flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group {{ request()->routeIs('keuangan.laporan') ? 'text-blue-600 font-semibold bg-blue-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:translate-x-1' }}">
+                    <a href="{{ route('pengeluaran.daftar') }}" class="flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 group {{ request()->routeIs('pengeluaran.daftar') ? 'text-blue-600 font-semibold bg-blue-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:translate-x-1' }}">
                         <div class="w-1.5 h-1.5 rounded-full bg-current mr-3 transition-all duration-200 group-hover:scale-150"></div>
-                        <span>Laporan Keuangan</span>
+                        <span>Daftar Pengeluaran</span>
                     </a>
                 </div>
             </div>

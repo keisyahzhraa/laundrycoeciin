@@ -4,20 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Pengeluaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PengeluaranController extends Controller
-{
-    // Laporan pengeluaran
-    public function index()
-    {
-        $pengeluarans = Pengeluaran::orderByDesc('id_pengeluaran')->paginate(10);
-        return view('keuangan.laporan_keuangan', compact('pengeluarans'));
-    }
-
-    // Form tambah pengeluaran
+{   
+// Form tambah pengeluaran
     public function create()
     {
-        return view('keuangan.tambah_pengeluaran');
+        return view('manajemen_pengeluaran.tambah_pengeluaran');
     }
 
     // Simpan pengeluaran
@@ -27,28 +21,28 @@ class PengeluaranController extends Controller
         $metode_enum = ['tunai','transfer','e-wallet','kartu_debit','kartu_kredit'];
 
         $validated = $request->validate([
-            'nominal_pengeluaran' => 'required|numeric|min:0.1',
-            'kategori_pengeluaran' => 'required|in:' . implode(',', $kategori_enum),
+            'nominal' => 'required|numeric|min:0.1',
+            'kategori' => 'required|in:' . implode(',', $kategori_enum),
             'metode_pembayaran' => 'required|in:' . implode(',', $metode_enum),
             'penerima' => 'required|string|max:100',
             'keterangan' => 'nullable|string',
-            'tanggal_pengeluaran' => 'required|date',
-            'bukti_lampiran' => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:5120'
+            'tanggal' => 'required|date',
+            'bukti_pengeluaran' => 'nullable|image|mimes:jpg,jpeg,png|max:5120'
         ]);
 
         $data = [
             'id_user' => auth()->id() ?? 1,
-            'nominal' => $validated['nominal_pengeluaran'],
-            'kategori' => $validated['kategori_pengeluaran'],
+            'nominal' => $validated['nominal'],
+            'kategori' => $validated['kategori'],
             'metode_pembayaran' => $validated['metode_pembayaran'],
             'penerima' => $validated['penerima'],
             'keterangan' => $validated['keterangan'] ?? null,
-            'tanggal' => $validated['tanggal_pengeluaran'],
+            'tanggal' => $validated['tanggal'],
             'bukti_pengeluaran' => null,
         ];
 
-        if ($request->hasFile('bukti_lampiran')) {
-            $image = $request->file('bukti_lampiran');
+        if ($request->hasFile('bukti_pengeluaran')) {
+            $image = $request->file('bukti_pengeluaran');
             $mime = $image->getMimeType();
             $base64 = base64_encode(file_get_contents($image->getRealPath()));
             $data['bukti_pengeluaran'] = 'data:' . $mime . ';base64,' . $base64;
@@ -56,14 +50,71 @@ class PengeluaranController extends Controller
 
         Pengeluaran::create($data);
 
-        return redirect()->route('keuangan.laporan')->with('success', 'Pengeluaran berhasil ditambahkan!');
+        return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil ditambahkan!');
     }
 
+    // Daftar pengeluaran
+    public function index(Request $request)
+    {
+        // VALIDASI FILTER
+        $request->validate([
+            'filter_bulan_tahun' => [
+                'nullable',
+                'regex:/^(0[1-9]|1[0-2])\/\d{4}$/'
+            ],
+        ]);
+
+        // =====================================
+        // 1. CEK APAKAH FILTER AKTIF
+        // =====================================
+        $isFilterActive = $request->filled('filter_bulan_tahun');
+        
+        // =====================================
+        // 2. QUERY UTAMA TABEL
+        // =====================================
+        $query = Pengeluaran::query();
+
+        // Jika filter aktif → terapkan filter
+        if ($isFilterActive) {
+
+            [$bulan, $tahun] = explode('/', $request->filter_bulan_tahun);
+
+            $query->whereMonth('tanggal', (int) $bulan)
+                ->whereYear('tanggal', (int) $tahun);
+
+            // Total pencatatan bulan yang dipilih
+            $totalPerBulan = $query->count();
+
+        } else {
+
+            // Tanpa filter → hitung bulan ini saja
+            $totalPerBulan = Pengeluaran::whereMonth('tanggal', now()->month)
+                                        ->whereYear('tanggal', now()->year)
+                                        ->count();
+        }
+
+        // =====================================
+        // 3. PAGINATION
+        // =====================================
+        $pengeluarans = $query->latest('tanggal')
+                            ->paginate(10)
+                            ->appends($request->only('filter_bulan_tahun'));
+
+        // =====================================
+        // 4. KIRIM KE VIEW
+        // =====================================
+        return view('manajemen_pengeluaran.pengeluaran', [
+            'pengeluarans' => $pengeluarans,
+            'totalPerBulan' => $totalPerBulan,
+            'isFilterActive' => $isFilterActive
+        ]);;    
+    }
+    
     // Form edit
     public function edit($id)
     {
         $pengeluaran = Pengeluaran::findOrFail($id); // ambil data berdasarkan id
-       return view('keuangan.tambah_pengeluaran', compact('pengeluaran'));
+        return view('manajemen_pengeluaran.tambah_pengeluaran', compact('pengeluaran'));
     }
 
 
@@ -74,28 +125,28 @@ class PengeluaranController extends Controller
         $metode_enum = ['tunai','transfer','e-wallet','kartu_debit','kartu_kredit'];
 
         $validated = $request->validate([
-            'nominal_pengeluaran' => 'required|numeric|min:0.1',
-            'kategori_pengeluaran' => 'required|in:' . implode(',', $kategori_enum),
+            'nominal' => 'required|numeric|min:0.1',
+            'kategori' => 'required|in:' . implode(',', $kategori_enum),
             'metode_pembayaran' => 'required|in:' . implode(',', $metode_enum),
             'penerima' => 'required|string|max:100',
             'keterangan' => 'nullable|string',
-            'tanggal_pengeluaran' => 'required|date',
-            'bukti_lampiran' => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:5120'
+            'tanggal' => 'required|date',
+            'bukti_pengeluaran' => 'nullable|image|mimes:jpg,jpeg,png|max:5120'
         ]);
 
         $pengeluaran = Pengeluaran::findOrFail($id);
 
         $data = [
-            'nominal' => $validated['nominal_pengeluaran'],
-            'kategori' => $validated['kategori_pengeluaran'],
+            'nominal' => $validated['nominal'],
+            'kategori' => $validated['kategori'],
             'metode_pembayaran' => $validated['metode_pembayaran'],
             'penerima' => $validated['penerima'],
             'keterangan' => $validated['keterangan'] ?? null,
-            'tanggal' => $validated['tanggal_pengeluaran'],
+            'tanggal' => $validated['tanggal'],
         ];
 
-        if ($request->hasFile('bukti_lampiran')) {
-            $image = $request->file('bukti_lampiran');
+        if ($request->hasFile('bukti_pengeluaran')) {
+            $image = $request->file('bukti_pengeluaran');
             $mime = $image->getMimeType();
             $base64 = base64_encode(file_get_contents($image->getRealPath()));
             $data['bukti_pengeluaran'] = 'data:' . $mime . ';base64,' . $base64;
@@ -103,7 +154,7 @@ class PengeluaranController extends Controller
 
         $pengeluaran->update($data);
 
-        return redirect()->route('keuangan.laporan')->with('success', 'Pengeluaran berhasil diperbarui!');
+        return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil diperbarui!');
     }
 
     // Hapus pengeluaran
@@ -112,6 +163,6 @@ class PengeluaranController extends Controller
         $pengeluaran = Pengeluaran::findOrFail($id);
         $pengeluaran->delete();
 
-        return redirect()->route('keuangan.laporan')->with('success', 'Pengeluaran berhasil dihapus!');
+        return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil dihapus!');
     }
 }

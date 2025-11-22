@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Pesanan - Coecin</title>
+    <title>Daftar Pesanan - Coeciin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Flatpickr CSS -->
@@ -162,7 +162,7 @@
                                         </span>
                                     </td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $pesanan->berat_cucian }} kg</td>
-                                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                                         @php
                                             $statusColors = [

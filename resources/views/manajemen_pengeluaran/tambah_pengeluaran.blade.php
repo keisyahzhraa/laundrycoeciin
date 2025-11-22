@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', isset($pengeluaran) ? 'Edit Pengeluaran | Coeciin' : 'Tambah Pengeluaran | Coeciin')
-@section('page_title', 'Manajemen Keuangan')
+@section('page_title', 'Manajemen Pengeluaran')
 
 @section('content')
 @php
@@ -10,12 +10,29 @@
 <main class="p-8 min-h-screen" style="background-color: #EFFCFF;">
   <!-- Header -->
   <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Manajemen Keuangan</h1>
-    <p class="text-gray-500 text-sm mt-1">
-      {{ isset($pengeluaran) ? 'Ubah data pengeluaran yang sudah ada' : 'Tambah data pengeluaran baru ke sistem' }}
+    <h1 class="text-3xl font-bold text-gray-800">Manajemen Pengeluaran</h1>
+    <p class="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-xl flex items-center gap-2 mt-1">
+        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 2a6 6 0 016 6v3l1.293 1.293a1 1 0 01-1.414 1.414L15 12.414V8a5 5 0 10-10 0v4.414l-.879.879a1 1 0 01-1.414-1.414L4 11V8a6 6 0 016-6z"/>
+            <path d="M5 15a5 5 0 0010 0h-2a3 3 0 11-6 0H5z"/>
+        </svg>
+
+        {{ isset($pengeluaran) 
+            ? 'Ubah data pengeluaran yang sudah ada.' 
+            : 'Tambah data pengeluaran baru ke sistem.' 
+        }}
     </p>
   </div>
 
+  @if ($errors->any())
+      <div class="text-red-600 text-sm mb-4">
+          <ul>
+              @foreach ($errors->all() as $error)
+                  <li>- {{ $error }}</li>
+              @endforeach
+          </ul>
+      </div>
+  @endif
   <!-- Form Card -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
@@ -33,11 +50,9 @@
 
     <!-- Form Content -->
     <form
-      action="{{ isset($pengeluaran) ? route('pengeluaran.update', $pengeluaran->id_pengeluaran) : route('keuangan.store') }}"
-      method="POST"
+      action="{{ isset($pengeluaran) ? route('pengeluaran.update', $pengeluaran->id_pengeluaran) : route('pengeluaran.store') }}" method="POST" id="formPengeluaran"
       enctype="multipart/form-data"
-      class="p-8"
-    >
+      class="p-8">
       @csrf
       @if(isset($pengeluaran))
         @method('PUT')
@@ -62,25 +77,26 @@
               Tanggal Pengeluaran <span class="text-red-500">*</span>
             </label>
             <input
-              type="date"
-              name="tanggal_pengeluaran"
-              value="{{ old('tanggal_pengeluaran', isset($pengeluaran) ? Carbon::parse($pengeluaran->tanggal)->format('Y-m-d') : '') }}"
+              type="datetime-local"
+              name="tanggal"
+              value="{{ old('tanggal', isset($pengeluaran) ? date('Y-m-d\TH:i', strtotime($pengeluaran->tanggal)) : '') }}"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all"
               required>
           </div>
 
           <!-- Nominal Pengeluaran -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">
-              Nominal Pengeluaran <span class="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="nominal_pengeluaran"
-              value="{{ old('nominal_pengeluaran', $pengeluaran->nominal ?? '') }}"
-              placeholder="Masukkan nominal pengeluaran"
-              class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all placeholder:text-gray-400"
-              required>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                  Nominal Pengeluaran <span class="text-red-500">*</span>
+              </label>
+
+              <!-- DISPLAY (yang terlihat user) -->
+              <input type="text" id="nominal_display"
+                  placeholder="Masukkan nominal pengeluaran"
+                  class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg 
+                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
+              <input type="hidden" name="nominal" id="nominal"
+                  value="{{ $pengeluaran->nominal ?? '' }}">
           </div>
 
           <!-- Kategori Pengeluaran -->
@@ -89,7 +105,7 @@
               Kategori Pengeluaran <span class="text-red-500">*</span>
             </label>
             <select
-              name="kategori_pengeluaran"
+              name="kategori"
               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all text-gray-700"
               required>
               @php
@@ -97,7 +113,7 @@
               @endphp
               <option value="">Pilih kategori pengeluaran</option>
               @foreach($kategori as $k)
-                  <option value="{{ $k }}" {{ old('kategori_pengeluaran', $pengeluaran->kategori ?? '') == $k ? 'selected' : '' }}>
+                  <option value="{{ $k }}" {{ old('kategori', $pengeluaran->kategori ?? '') == $k ? 'selected' : '' }}>
                       {{ ucfirst(str_replace('_', ' ', $k)) }}
                   </option>
               @endforeach
@@ -185,10 +201,10 @@
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
               <input
                 type="file"
-                name="bukti_lampiran"
+                name="bukti_pengeluaran"
                 id="file-upload"
                 class="hidden"
-                accept="image/*,.pdf"
+                accept="image/*"
                 onchange="updateFileName(this)">
               <label for="file-upload" class="cursor-pointer">
                 <div class="flex flex-col items-center">
@@ -196,7 +212,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                   </svg>
                   <p class="text-sm font-medium text-gray-600 mb-1">Klik untuk unggah bukti pengeluaran</p>
-                  <p class="text-xs text-gray-400">PNG, JPG, PDF (Max. 5MB)</p>
+                  <p class="text-xs text-gray-400">PNG, JPG, JPEG (Max. 5MB)</p>
                   <p id="file-name" class="text-sm text-blue-600 font-medium mt-3"></p>
                 </div>
               </label>
@@ -207,7 +223,7 @@
 
       <!-- Buttons -->
       <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
-        <a href="{{ route('keuangan.laporan') }}"
+        <a href="{{ route('pengeluaran.daftar') }}"
            class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-all">
           Batal
         </a>
@@ -231,5 +247,79 @@ function updateFileName(input) {
     fileNameElement.textContent = '';
   }
 }
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("formPengeluaran");
+    const inputDisplay = document.getElementById("nominal_display");
+    const inputHidden  = document.getElementById("nominal");
+
+    // === Membuat elemen warning ===
+    let warningText = document.createElement("p");
+    warningText.className = "text-red-500 text-xs mt-1 hidden";
+    warningText.innerText = "Cukup tuliskan angka saja.";
+    inputDisplay.insertAdjacentElement("afterend", warningText);
+
+    // === Hapus semua selain angka ===
+    function cleanNumber(str) {
+        return str.replace(/[^0-9]/g, "");
+    }
+
+    // === Format Rp. 999.999 ===
+    function formatRupiah(angka) {
+        return "Rp " + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // === EVENT INPUT (langsung format saat user mengetik) ===
+    inputDisplay.addEventListener("input", function () {
+        let raw = cleanNumber(this.value);
+
+        // Jika user masukkan karakter selain angka
+        if (this.value.match(/[^0-9]/)) {
+            warningText.classList.remove("hidden");
+        } else {
+            warningText.classList.add("hidden");
+        }
+
+        if (raw.length === 0) {
+            this.value = "";
+            inputHidden.value = "";
+            return;
+        }
+
+        this.value = formatRupiah(raw);
+        inputHidden.value = raw;
+    });
+
+    // === 🔥 VALIDASI SUBMIT (Bagian penting agar form tidak lolos submit) ===
+    form.addEventListener("submit", function (e) {
+
+        let raw = inputHidden.value;
+
+        // 1. Tidak boleh kosong
+        if (!raw || raw.length === 0) {
+            e.preventDefault();
+            alert("Nominal pengeluaran tidak boleh kosong.");
+            return;
+        }
+
+        // 2. Tidak boleh lebih dari 8 digit (sesuai DECIMAL(10,2))
+        if (raw.length > 8) {
+            e.preventDefault();
+            alert("Nominal pengeluaran terlalu besar. Maksimal 8 digit angka.");
+            return;
+        }
+
+        // 3. Jika display mengandung karakter ilegal
+        if (inputDisplay.value.match(/[^0-9\.Rp\s]/)) {
+            e.preventDefault();
+            alert("Format nominal pengeluaran salah. Cukup tuliskan angka saja.");
+            return;
+        }
+    });
+
+});
 </script>
 @endsection

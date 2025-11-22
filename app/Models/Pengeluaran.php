@@ -9,6 +9,9 @@ class Pengeluaran extends Model
     protected $table = 'pengeluarans';
     protected $primaryKey = 'id_pengeluaran';
 
+    // Laravel  otomatis mengelola created_at dan updated_at
+    public $timestamps = true;
+    
     protected $fillable = [
         'id_user',
         'nominal',
@@ -18,8 +21,6 @@ class Pengeluaran extends Model
         'keterangan',
         'tanggal',
         'bukti_pengeluaran',
-        'created_at',
-        'updated_at'
     ];
 
     protected $casts = [

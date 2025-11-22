@@ -57,10 +57,10 @@ Route::put('/layanan/update', [HargaLayananController::class, 'update'])
 // ========================================
 // MANAJEMEN PENGELUARAN
 // ========================================
-Route::prefix('keuangan')->name('keuangan.')->group(function () {
+Route::prefix('pengeluaran')->name('pengeluaran.')->group(function () {
+    Route::get('/', [PengeluaranController::class, 'index'])->name('daftar');
     Route::get('/tambah', [PengeluaranController::class, 'create'])->name('tambah');
     Route::post('/tambah', [PengeluaranController::class, 'store'])->name('store');
-    Route::get('/', [PengeluaranController::class, 'index'])->name('daftar');
     Route::get('/{id}/edit', [PengeluaranController::class, 'edit'])->name('edit');
     Route::put('/{id}', [PengeluaranController::class, 'update'])->name('update');
     Route::delete('/{id}', [PengeluaranController::class, 'destroy'])->name('destroy');
