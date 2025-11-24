@@ -136,25 +136,6 @@
                 </button>
             </form>
         </nav>
-
-        <!-- User Info Footer (Optional) -->
-        <div class="px-4 py-4 border-t border-gray-200/50 sidebar-text">
-            @if(Auth::check())
-                <div class="flex items-center space-x-3 px-3 py-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                    @if(Auth::user()->profile_image)
-                        <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" alt="Profile" class="w-9 h-9 rounded-lg object-cover border-2 border-white shadow-sm">
-                    @else
-                        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                            {{ strtoupper(substr(Auth::user()->nama_lengkap ?? Auth::user()->name ?? 'A', 0, 1)) }}
-                        </div>
-                    @endif
-                    <div class="flex-1 min-w-0">
-                        <p class="text-xs font-semibold text-gray-800 truncate">{{ Str::limit(Auth::user()->nama_lengkap ?? Auth::user()->name, 15) }}</p>
-                        <p class="text-xs text-gray-500">{{ ucfirst(Auth::user()->role ?? 'Admin') }}</p>
-                    </div>
-                </div>
-            @endif
-        </div>
     </div>
 </aside>
 

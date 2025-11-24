@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('penerima', 100);
             $table->text('keterangan')->nullable();
             $table->dateTime('tanggal');
-            $table->longText('bukti_pengeluaran')->nullable(); // menyimpan gambar sebagai base64
+            $table->string('bukti_pengeluaran')->nullable(); // menyimpan gambar sebagai base64
             $table->timestamps();
         });
     }

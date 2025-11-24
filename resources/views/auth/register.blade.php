@@ -6,42 +6,53 @@
   <title>Register | Coeciin Laundry</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col bg-white">
+<body class="h-screen overflow-hidden">
 
   <!-- 🔹 Header -->
-  <header class="w-full bg-sky-500 text-white py-4 px-8 flex items-center justify-between">
+  <header class="w-full bg-sky-500 text-white py-4 px-8 flex items-center justify-between flex-none">
     <h1 class="text-2xl font-semibold tracking-wide ml-7">Coeciin</h1>
   </header>
 
   <!-- 🔹 Konten utama -->
-  <main class="flex flex-1">
+   <main class="flex flex-1 h-full overflow-hidden">
     <!-- Bagian kiri -->
-    <div class="hidden md:flex w-1/2 relative">
+    <div class="hidden md:flex w-1/2 relative h-full overflow-hidden">
       <img 
-        src="{{ asset('images/laundry.jpg') }}" 
+        src="{{ asset('regist.png') }}" 
         alt="Laundry Background"
         class="object-cover w-full h-full brightness-75"
       />
-      <div class="absolute inset-0 bg-black/0"></div>
-      <div class="absolute inset-0 flex flex-col justify-start items-start px-15 pt-15">
-        <h1 class="text-white text-5xl font-bold leading-snug drop-shadow-md">
+      <div class="absolute inset-0 flex flex-col justify-start items-start px-15 pt-12">
+        <h1 class="text-white text-5xl font-bold ml-11 -mt-4 leading-tight leading-snug drop-shadow-md">
           Daftarkan akun<br />adminmu dan mulai<br />kelola laundry dengan<br />lebih mudah
         </h1>
       </div>
     </div>
 
     <!-- Bagian kanan -->
-    <div class="flex w-full md:w-1/2 items-center justify-center bg-white">
+    <div class="flex w-full md:w-1/2 items-center justify-center bg-white overflow-hidden">
       <div class="max-w-md w-full p-8">
         <div class="text-center mb-8">
           <h2 class="text-4xl font-semibold text-gray-800">Register</h2>
         </div>
 
         @if ($errors->any())
-          <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-            {{ $errors->first() }}
+          <div class="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-700 shadow-sm animate-[fadeIn_0.3s_ease-out]">
+              <div class="flex items-center mb-2">
+                  <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01M4.93 4.93l14.14 14.14" />
+                  </svg>
+                  <h3 class="font-semibold text-lg">Terjadi beberapa kesalahan:</h3>
+              </div>
+
+              <ul class="list-disc pl-6 space-y-1">
+                  @foreach ($errors->all() as $error)
+                      <li class="text-sm">{{ $error }}</li>
+                  @endforeach
+              </ul>
           </div>
-        @endif
+      @endif
 
         <form action="{{ route('register.submit') }}" method="POST" class="space-y-6">
           @csrf
@@ -50,10 +61,17 @@
             <input 
               type="text" 
               name="username" 
+              value="{{ old('username') }}"
               placeholder="Masukan username"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 placeholder:text-gray-400"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 
+                    {{ $errors->has('username') ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-sky-400' }}"
               required
             />
+            @error('username')
+                <p class="mt-1 text-red-600 text-sm flex items-center">
+                    ⚠️ <span class="ml-1">{{ $message }}</span>
+                </p>
+            @enderror
           </div>
 
           <div>
@@ -61,10 +79,17 @@
             <input 
               type="email" 
               name="email" 
+              value="{{ old('email') }}"
               placeholder="Masukan email"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 placeholder:text-gray-400"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 
+                    {{ $errors->has('email') ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-sky-400' }}"
               required
             />
+            @error('email')
+                <p class="mt-1 text-red-600 text-sm flex items-center">
+                    ⚠️ <span class="ml-1">{{ $message }}</span>
+                </p>
+            @enderror
           </div>
 
           <div>
@@ -73,9 +98,15 @@
               type="password" 
               name="password" 
               placeholder="Masukan password"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 placeholder:text-gray-400"
+              class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 
+                    {{ $errors->has('password') ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-sky-400' }}"
               required
             />
+            @error('password')
+                <p class="mt-1 text-red-600 text-sm flex items-center">
+                    ⚠️ <span class="ml-1">{{ $message }}</span>
+                </p>
+            @enderror
           </div>
 
           <div>

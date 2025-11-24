@@ -11,14 +11,14 @@ use App\Http\Controllers\HargaLayananController;
 // ========================================
 // AUTH ROUTES (Login & Register)
 // ========================================
-Route::prefix('register')->name('register.')->group(function () {
+Route::prefix('register')->name('register')->group(function () {
 Route::get('/', [AuthController::class, 'showRegisterForm']);
-Route::post('/', [AuthController::class, 'register'])->name('submit');
+Route::post('/', [AuthController::class, 'register'])->name('.submit');
 });
 
-Route::prefix('login')->name('login.')->group(function () {
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/', [AuthController::class, 'login'])->name('submit');
+Route::prefix('login')->name('login')->group(function () {
+Route::get('/', [AuthController::class, 'showLoginForm']);
+Route::post('/', [AuthController::class, 'login'])->name('.submit');
 });
 
 // ========================================
@@ -71,10 +71,10 @@ Route::prefix('pengeluaran')->name('pengeluaran.')->group(function () {
 // ========================================
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/profile', [AuthController::class, 'editProfile'])->name('profile');
-    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
 });
 
 // ========================================
 // LOGOUT
 // ========================================
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

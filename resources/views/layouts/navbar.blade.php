@@ -22,22 +22,30 @@
                             class="flex items-center space-x-3 hover:bg-gray-50 px-2 py-1.5 rounded-xl transition-all duration-200 focus:outline-none group">
                         <!-- Avatar -->
                         @if(Auth::check())
-                            @if(Auth::user()->profile_image)
-                                <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" 
-                                     alt="Profile" 
-                                     class="w-9 h-9 rounded-full object-cover">
+                            @php
+                                // Buat nama lengkap dari depan + belakang
+                                $fullName = trim((Auth::user()->nama_depan ?? '') . ' ' . (Auth::user()->nama_belakang ?? ''));
+
+                                // Jika kosong semua, fallback ke "A"
+                                $initial = strtoupper(substr($fullName !== '' ? $fullName : 'A', 0, 1));
+                            @endphp
+
+                            @if(Auth::user()->foto)
+                                <img src="{{ asset('storage/' . Auth::user()->foto) }}" 
+                                    alt="Profile" 
+                                    class="w-9 h-9 rounded-full object-cover">
                             @else
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 via-pink-500 to-pink-600 flex items-center justify-center text-white font-bold text-sm">
-                                    {{ strtoupper(substr(Auth::user()->nama_lengkap ?? Auth::user()->name ?? 'A', 0, 1)) }}
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 via-pink-500 to-pink-600 
+                                            flex items-center justify-center text-white font-bold text-sm">
+                                    {{ $initial }}
                                 </div>
                             @endif
                         @endif
 
-                        <!-- User Info -->
                         <div class="hidden md:flex flex-col items-start">
                             @if(Auth::check())
                                 <p class="text-sm font-semibold text-gray-900 leading-tight">
-                                    {{ Str::limit(Auth::user()->nama_lengkap ?? Auth::user()->name, 15) }}
+                                    {{ Str::limit(Auth::user()->nama_depan . ' ' . Auth::user()->nama_belakang, 18) }}
                                 </p>
                                 <p class="text-xs text-gray-500 leading-tight">
                                     {{ ucfirst(Auth::user()->role ?? 'Admin') }}
@@ -68,8 +76,8 @@
                         <div class="px-5 py-4 bg-gradient-to-br from-blue-50 to-indigo-50/50 border-b border-gray-200/60">
                             @if(Auth::check())
                                 <div class="flex items-center space-x-3">
-                                    @if(Auth::user()->profile_image)
-                                        <img src="{{ asset('storage/' . Auth::user()->profile_image) }}" 
+                                    @if(Auth::user()->foto)
+                                        <img src="{{ asset('storage/' . Auth::user()->foto) }}" 
                                              alt="Profile" 
                                              class="w-12 h-12 rounded-xl border-2 border-white object-cover shadow-sm">
                                     @else

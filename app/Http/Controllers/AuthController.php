@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -21,8 +22,8 @@ class AuthController extends Controller
     {
         $request->validate([
             'username' => 'required|unique:users,username',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         // Simpan user baru
@@ -51,14 +52,18 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard.index');
+        // ✔ Cek apakah username terdaftar
+
+        if (!Auth::attempt($request->only('username', 'password'))) {
+            return back()->withErrors([
+                'username' => 'Username atau password salah.'
+            ]);
         }
 
-        return back()->withErrors([
-            'username' => 'Username atau password salah.',
-        ]);
+        // ✔ Login berhasil
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard.index');
     }
 
     // Logout
@@ -76,28 +81,50 @@ class AuthController extends Controller
 
     public function editProfile()
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? User::findOrFail(1);
+        
+        Auth::setUser($user); // pastikan auth()->user() tidak null
+        
         return view('admin.admin_profile', compact('user'));
     }
 
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
-
+        $user = Auth::user() ?? User::findOrFail(1);
+    
+        Auth::setUser($user); // pastikan auth()->user() tidak null
+        
         $request->validate([
             'username'     => 'required|string|max:50|unique:users,username,' . $user->id,
             'nama_depan'   => 'nullable|string|max:255',
             'nama_belakang'=> 'nullable|string|max:255',
-            'no_telepon'   => 'nullable|string|max:20',
+            'no_telepon' => [
+                'nullable',
+                'regex:/^08[0-9]{8,13}$/'
+            ],
             'email'        => 'required|email|unique:users,email,' . $user->id,
             'password'     => 'nullable|min:6|confirmed',
             'foto'         => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        // Update foto jika diupload
-         if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('photos', 'public');
-            $user->foto = $path;
+        if ($request->hasFile('foto')) {
+
+            $foto = $request->file('foto');
+
+            // Validasi resolusi aman
+            list($width, $height) = getimagesize($foto);
+            if ($width > 3000 || $height > 3000) {
+                return back()->withErrors(['foto' => 'Resolusi terlalu besar. Maksimal 3000x3000 px.']);
+            }
+
+            // Delete foto lama
+            if ($user->foto && Storage::disk('public')->exists($user->foto)) {
+                Storage::disk('public')->delete($user->foto);
+            }
+
+            // Simpan foto baru
+            $filename = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $user->foto = $foto->storeAs('photos', $filename, 'public');
         }
 
          // Update data lain
@@ -105,11 +132,10 @@ class AuthController extends Controller
         $user->nama_depan    = $request->nama_depan;
         $user->nama_belakang = $request->nama_belakang;
         $user->no_telepon    = $request->no_telepon;
-        $user->alamat        = $request->alamat;
         $user->email         = $request->email;
 
         if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+            $user->password = Hash::make($request->password);
         }
 
         $user->save();

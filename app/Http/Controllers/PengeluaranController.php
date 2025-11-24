@@ -146,11 +146,13 @@ class PengeluaranController extends Controller
         ];
 
         if ($request->hasFile('bukti_pengeluaran')) {
-            $image = $request->file('bukti_pengeluaran');
-            $mime = $image->getMimeType();
-            $base64 = base64_encode(file_get_contents($image->getRealPath()));
-            $data['bukti_pengeluaran'] = 'data:' . $mime . ';base64,' . $base64;
+
+        if ($pengeluaran->bukti_pengeluaran && Storage::disk('public')->exists($pengeluaran->bukti_pengeluaran)) {
+            Storage::disk('public')->delete($pengeluaran->bukti_pengeluaran);
         }
+
+        $pengeluaran->bukti_pengeluaran = $request->file('bukti_pengeluaran')->store('bukti_pengeluaran', 'public');
+    }
 
         $pengeluaran->update($data);
 
