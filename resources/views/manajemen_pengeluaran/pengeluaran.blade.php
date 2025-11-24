@@ -146,7 +146,7 @@
                                     <!-- Bukti -->
                                     <td class="px-6 py-4 text-center">
                                         @if($item->bukti_pengeluaran)
-                                            <button onclick="showBukti('{{ $item->bukti_pengeluaran }}')"
+                                            <button onclick="showBukti('{{ asset('storage/' . $item->bukti_pengeluaran) }}')"
                                                 class="text-blue-600 hover:bg-blue-100 p-2 rounded-lg">
                                                 <svg class="w-5 h-5" stroke="currentColor" fill="none"
                                                     viewBox="0 0 24 24">
@@ -327,10 +327,11 @@
             document.getElementById("detailMetode").textContent = data.metode_pembayaran ?? "-";
             document.getElementById("detailKeterangan").textContent = data.keterangan ?? "-";
 
+            // 🔵 PERUBAHAN
             if (data.bukti_pengeluaran)
-                document.getElementById("detailBukti").src = data.bukti_pengeluaran;
+                document.getElementById("detailBukti").src = "{{ asset('storage') }}/" + data.bukti_pengeluaran;
             else
-            document.getElementById("detailBukti").src = "";
+                document.getElementById("detailBukti").src = "";
         
             modalDetail.classList.remove("hidden");
             modalDetail.classList.add("flex");

@@ -192,11 +192,14 @@
             </label>
 
             @if(isset($pengeluaran) && $pengeluaran->bukti_pengeluaran)
-              <div class="mb-4">
-                <p class="text-sm text-gray-600 mb-2">Bukti Sebelumnya:</p>
-                <img src="{{ $pengeluaran->bukti_pengeluaran }}" alt="Bukti Lama" class="w-40 rounded-lg border">
-              </div>
-            @endif
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Bukti Sebelumnya:</p>
+
+                    <img src="{{ asset('storage/' . $pengeluaran->bukti_pengeluaran) }}"
+                         alt="Bukti Pengeluaran"
+                         class="w-40 rounded-lg border rounded-lg shadow">
+                </div>
+            @endif 
 
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer">
               <input

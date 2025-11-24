@@ -16,9 +16,9 @@ Route::get('/', [AuthController::class, 'showRegisterForm']);
 Route::post('/', [AuthController::class, 'register'])->name('.submit');
 });
 
-Route::prefix('login')->name('login')->group(function () {
+Route::name('login')->group(function () {
 Route::get('/', [AuthController::class, 'showLoginForm']);
-Route::post('/', [AuthController::class, 'login'])->name('.submit');
+Route::post('/login', [AuthController::class, 'login'])->name('.submit');
 });
 
 // ========================================

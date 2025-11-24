@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pengeluaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PengeluaranController extends Controller
 {   
@@ -147,16 +149,29 @@ class PengeluaranController extends Controller
 
         if ($request->hasFile('bukti_pengeluaran')) {
 
-        if ($pengeluaran->bukti_pengeluaran && Storage::disk('public')->exists($pengeluaran->bukti_pengeluaran)) {
-            Storage::disk('public')->delete($pengeluaran->bukti_pengeluaran);
+            $foto = $request->file('bukti_pengeluaran');
+
+            // Hapus foto lama jika ada
+            if (
+                $pengeluaran->bukti_pengeluaran &&
+                Storage::disk('public')->exists($pengeluaran->bukti_pengeluaran)
+            ) {
+                Storage::disk('public')->delete($pengeluaran->bukti_pengeluaran);
+            }
+
+            // Simpan foto baru dengan nama unik
+            $filename = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $path = $foto->storeAs('bukti_pengeluaran', $filename, 'public');
+
+            // Update field bukti
+            $data['bukti_pengeluaran'] = $path;
         }
 
-        $pengeluaran->bukti_pengeluaran = $request->file('bukti_pengeluaran')->store('bukti_pengeluaran', 'public');
-    }
-
+        // Update data lain
         $pengeluaran->update($data);
 
-        return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil diperbarui!');
+        return redirect()->route('pengeluaran.daftar')
+            ->with('success', 'Pengeluaran berhasil diperbarui!');
     }
 
     // Hapus pengeluaran
