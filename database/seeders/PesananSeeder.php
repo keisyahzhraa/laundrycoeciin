@@ -29,12 +29,10 @@ class PesananSeeder extends Seeder
 
             // tanggal pesanan antara 1–14 hari lalu
             $tanggalPesanan = Carbon::now()->subDays(rand(1, 14));
+            $tanggalSelesai = (clone $tanggalPesanan)->addDays(rand(1, 3));
 
             // Status pesanan
             $statusPesanan = $faker->randomElement(['Pending', 'Proses', 'Selesai']);
-            $tanggalSelesai = $statusPesanan === 'Selesai'
-                ? (clone $tanggalPesanan)->addDays(rand(1, 3))
-                : null;
 
             // Status pembayaran
             $statusPembayaran = match ($statusPesanan) {

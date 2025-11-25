@@ -108,6 +108,32 @@
             <!-- Divider -->
             <div class="my-4 border-t border-gray-200/50"></div>
 
+            {{-- PERUBAHAN: Tambah menu Laporan Keuangan --}}
+            <a href="{{ route('keuangan.laporan') }}" 
+                class="menu-item relative group flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 
+                    {{ request()->routeIs('keuangan.laporan') 
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' 
+                        : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
+                
+                <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                    <svg class="w-5 h-5 transition-transform group-hover:scale-110 duration-200" 
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M11 11V3a1 1 0 012 0v8m-6 0V7a1 1 0 012 0v4m10 0V5a1 1 0 012 0v6m-6 0v6a1 1 0 01-2 0v-6" />
+                    </svg>
+                </div>
+
+                <span class="font-semibold sidebar-text ml-3 whitespace-nowrap">
+                    Laporan Keuangan
+                </span>
+
+                @if(request()->routeIs('keuangan.laporan'))
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-l-full sidebar-text"></div>
+                @endif
+
+                <span class="sidebar-tooltip">Laporan Keuangan</span>
+            </a>
+
             <!-- Profil Admin -->
             <a href="{{ route('admin.profile') }}" class="menu-item relative group flex items-center px-4 py-3.5 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.profile') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]' : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
                 <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">

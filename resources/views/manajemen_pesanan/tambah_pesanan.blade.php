@@ -88,7 +88,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Berat (kg)<span class="text-red-500 ml-1">*</span></label>
-                                <input type="number" step="0.1" name="berat_cucian" id="berat" placeholder="Masukkan berat laundry" required
+                                <input type="decimal" name="berat_cucian" id="berat" placeholder="Masukkan berat laundry" required
                                        value="{{ $pesanan->berat_cucian ?? old('berat_cucian') }}"
                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500">
                             </div>
@@ -255,6 +255,16 @@
             let angka = totalDisplay.value.replace(/[^0-9]/g, '');
             totalReal.value = angka === "" ? "" : angka;
         });
+    });
+    
+    document.getElementById('berat').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+
+        // Hanya boleh 1 titik
+        const parts = this.value.split('.');
+        if (parts.length > 2) {
+            this.value = parts[0] + '.' + parts[1];
+        }
     });
     </script>
 

@@ -24,7 +24,6 @@ class HargaLayananController extends Controller
     }
 
     return back()->with('success', 'Harga layanan berhasil diperbarui.');
-        return back()->with('success', 'Harga layanan berhasil diperbarui!');
     }
 }
 

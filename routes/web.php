@@ -7,6 +7,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\HargaLayananController;
+use App\Http\Controllers\LaporanKeuanganController;
+
 
 // ========================================
 // AUTH ROUTES (Login & Register)
@@ -65,6 +67,12 @@ Route::prefix('pengeluaran')->name('pengeluaran.')->group(function () {
     Route::put('/{id}', [PengeluaranController::class, 'update'])->name('update');
     Route::delete('/{id}', [PengeluaranController::class, 'destroy'])->name('destroy');
 });
+
+// ========================================
+// LAPORAN KEUANGAN
+// ========================================
+Route::get('/laporan-keuangan', [LaporanKeuanganController::class, 'index'])
+    ->name('keuangan.laporan');
 
 // ========================================
 // PROFIL ADMIN

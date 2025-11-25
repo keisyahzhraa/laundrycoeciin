@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('berat_cucian', 5, 2);
             $table->foreignId('id_layanan')->constrained('harga_layanans', 'id_layanan');
             $table->dateTime('tanggal_pesanan');
-            $table->dateTime('tanggal_selesai')->nullable();
+            $table->dateTime('tanggal_selesai');
             $table->text('keterangan')->nullable();
             $table->enum('status_pesanan', ['Pending', 'Proses', 'Selesai'])->default('Pending');
             $table->decimal('total_harga', 10, 2);
