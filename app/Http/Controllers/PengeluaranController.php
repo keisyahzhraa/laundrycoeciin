@@ -63,9 +63,6 @@ class PengeluaranController extends Controller
             $data['bukti_pengeluaran'] = $path;
         }
 
-        // Update data lain
-        $pengeluaran->update($data);
-        
         Pengeluaran::create($data);
 
         return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil ditambahkan!');
