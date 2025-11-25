@@ -44,12 +44,28 @@ class PengeluaranController extends Controller
         ];
 
         if ($request->hasFile('bukti_pengeluaran')) {
-            $image = $request->file('bukti_pengeluaran');
-            $mime = $image->getMimeType();
-            $base64 = base64_encode(file_get_contents($image->getRealPath()));
-            $data['bukti_pengeluaran'] = 'data:' . $mime . ';base64,' . $base64;
+
+            $foto = $request->file('bukti_pengeluaran');
+
+            // Hapus foto lama jika ada
+            if (
+                $pengeluaran->bukti_pengeluaran &&
+                Storage::disk('public')->exists($pengeluaran->bukti_pengeluaran)
+            ) {
+                Storage::disk('public')->delete($pengeluaran->bukti_pengeluaran);
+            }
+
+            // Simpan foto baru dengan nama unik
+            $filename = uniqid() . '.' . $foto->getClientOriginalExtension();
+            $path = $foto->storeAs('bukti_pengeluaran', $filename, 'public');
+
+            // Update field bukti
+            $data['bukti_pengeluaran'] = $path;
         }
 
+        // Update data lain
+        $pengeluaran->update($data);
+        
         Pengeluaran::create($data);
 
         return redirect()->route('pengeluaran.daftar')->with('success', 'Pengeluaran berhasil ditambahkan!');

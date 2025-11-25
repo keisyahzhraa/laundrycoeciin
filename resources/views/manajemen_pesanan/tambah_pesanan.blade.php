@@ -324,6 +324,9 @@
 
         // === 🔥 VALIDASI SUBMIT (Bagian penting agar form tidak lolos submit) ===
         form.addEventListener("submit", function (e) {
+  
+            // BERSIHKAN angka tersembunyi dari Rp atau titik
+            inputHidden.value = inputHidden.value.replace(/[^0-9]/g, '');
 
             let raw = inputHidden.value;
 

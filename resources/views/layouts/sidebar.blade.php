@@ -116,10 +116,9 @@
                         : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
                 
                 <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">
-                    <svg class="w-5 h-5 transition-transform group-hover:scale-110 duration-200" 
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                            d="M11 11V3a1 1 0 012 0v8m-6 0V7a1 1 0 012 0v4m10 0V5a1 1 0 012 0v6m-6 0v6a1 1 0 01-2 0v-6" />
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 7h18v10H3V7zm3 0a4 4 0 004 4m10-4a4 4 0 01-4 4m-6 0a4 4 0 000 4m8-4a4 4 0 010 4" />
                     </svg>
                 </div>
 
