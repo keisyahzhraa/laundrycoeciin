@@ -116,11 +116,14 @@
                         : 'text-gray-700 hover:bg-gray-100/70 hover:scale-[1.02]' }}">
                 
                 <div class="flex items-center justify-center w-5 h-5 flex-shrink-0">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 7h18v10H3V7zm3 0a4 4 0 004 4m10-4a4 4 0 01-4 4m-6 0a4 4 0 000 4m8-4a4 4 0 010 4" />
-                    </svg>
-                </div>
+    <svg class="w-5 h-5 transition-transform group-hover:scale-110 duration-200"
+        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 4h14v16H5z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 4v16M5 8h14" />
+    </svg>
+</div>
 
                 <span class="font-semibold sidebar-text ml-3 whitespace-nowrap">
                     Laporan Keuangan

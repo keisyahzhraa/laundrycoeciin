@@ -40,20 +40,11 @@ class PengeluaranController extends Controller
             'penerima' => $validated['penerima'],
             'keterangan' => $validated['keterangan'] ?? null,
             'tanggal' => $validated['tanggal'],
-            'bukti_pengeluaran' => null,
         ];
 
         if ($request->hasFile('bukti_pengeluaran')) {
 
             $foto = $request->file('bukti_pengeluaran');
-
-            // Hapus foto lama jika ada
-            if (
-                $pengeluaran->bukti_pengeluaran &&
-                Storage::disk('public')->exists($pengeluaran->bukti_pengeluaran)
-            ) {
-                Storage::disk('public')->delete($pengeluaran->bukti_pengeluaran);
-            }
 
             // Simpan foto baru dengan nama unik
             $filename = uniqid() . '.' . $foto->getClientOriginalExtension();
