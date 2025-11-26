@@ -259,28 +259,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputDisplay = document.getElementById("nominal_display");
     const inputHidden  = document.getElementById("nominal");
 
-    // === Membuat elemen warning ===
+    // === Warning elemen ===
     let warningText = document.createElement("p");
     warningText.className = "text-red-500 text-xs mt-1 hidden";
     warningText.innerText = "Cukup tuliskan angka saja.";
     inputDisplay.insertAdjacentElement("afterend", warningText);
 
-    // === Hapus semua selain angka ===
+    // ================ FUNGSI ================
     function cleanNumber(str) {
         return str.replace(/[^0-9]/g, "");
     }
 
-    // === Format Rp. 999.999 ===
     function formatRupiah(angka) {
         return "Rp " + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // === EVENT INPUT (langsung format saat user mengetik) ===
+    // ================ SAAT EDIT (ISI DISPLAY OTOMATIS) ================
+    if (inputHidden.value && inputHidden.value.length > 0) {
+        inputDisplay.value = formatRupiah(inputHidden.value);
+    }
+
+    // ================ EVENT INPUT ================
     inputDisplay.addEventListener("input", function () {
+
+        let adaKarakterAneh = /[^0-9]/.test(this.value);  // cek karakter selain angka
+
         let raw = cleanNumber(this.value);
 
-        // Jika user masukkan karakter selain angka
-        if (this.value.match(/[^0-9]/)) {
+        if (adaKarakterAneh) {
             warningText.classList.remove("hidden");
         } else {
             warningText.classList.add("hidden");
@@ -296,29 +302,27 @@ document.addEventListener("DOMContentLoaded", function () {
         inputHidden.value = raw;
     });
 
-    // === 🔥 VALIDASI SUBMIT (Bagian penting agar form tidak lolos submit) ===
+    // ================ VALIDASI SUBMIT ================
     form.addEventListener("submit", function (e) {
 
         let raw = inputHidden.value;
 
-        // 1. Tidak boleh kosong
-        if (!raw || raw.length === 0) {
+        if (!raw) {
             e.preventDefault();
             alert("Nominal pengeluaran tidak boleh kosong.");
             return;
         }
 
-        // 2. Tidak boleh lebih dari 8 digit (sesuai DECIMAL(10,2))
         if (raw.length > 8) {
             e.preventDefault();
             alert("Nominal pengeluaran terlalu besar. Maksimal 8 digit angka.");
             return;
         }
 
-        // 3. Jika display mengandung karakter ilegal
-        if (inputDisplay.value.match(/[^0-9\.Rp\s]/)) {
+        // Jika masih ada huruf / simbol illegal di display
+        if (/[^0-9\.Rp\s]/.test(inputDisplay.value)) {
             e.preventDefault();
-            alert("Format nominal pengeluaran salah. Cukup tuliskan angka saja.");
+            alert("Format nominal salah. Isi hanya angka.");
             return;
         }
     });
