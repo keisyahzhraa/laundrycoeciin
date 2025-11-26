@@ -175,36 +175,40 @@
                                             {{ $pesanan->status_pesanan }}
                                         </span>
                                     </td>
-                                    {{-- <td class="px-4 md:px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <a href="{{ route('pesanan.edit', $pesanan->id_pesanan) }}" class="text-blue-600 hover:text-blue-900 mr-2">Edit</a>
+                                    <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium">
+    <div class="flex items-center justify-center space-x-2">
 
-                                        <form action="{{ route('pesanan.destroy', $pesanan->id_pesanan) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin hapus pesanan ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                        </form>
-                                    </td> --}}
-                                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            {{-- Tombol Edit (optional, bisa dikosongkan atau di-link ke edit jika mau) --}}
-                                            <a href="{{ route('pesanan.edit', $pesanan->id_pesanan) }}"
-                                                class="p-2 text-amber-600 hover:text-amber-800 hover:bg-amber-100 rounded-lg transition-all duration-200 group">
-                                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                </svg>
-                                            </a>
-                                            {{-- Tombol Hapus --}}
-                                            <form action="{{ route('pesanan.destroy', $pesanan->id_pesanan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus pesanan ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-all duration-200 group">
-                                                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
+        <!-- SHOW DETAIL -->
+        <button onclick='showDetail(@json($pesanan))'
+            class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 group">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"/>
+            </svg>
+        </button>
+
+        <!-- EDIT -->
+        <a href="{{ route('pesanan.edit', $pesanan->id_pesanan) }}"
+            class="p-2 text-amber-600 hover:text-amber-800 hover:bg-amber-100 rounded-lg transition-all duration-200 group">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+        </a>
+
+        <!-- HAPUS -->
+        <form action="{{ route('pesanan.destroy', $pesanan->id_pesanan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus pesanan ini?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-all duration-200 group">
+                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
+        </form>
+
+    </div>
+</td>
+
                                 </tr>
                             @empty
                                 <tr>
@@ -273,8 +277,75 @@
         </div>
 
     </div>
+    <!-- Modal Detail Pesanan -->
+    <div id="modalDetail" class="fixed inset-0 bg-black bg-opacity-40 hidden justify-center items-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-lg p-6 relative">
 
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Detail Pesanan</h2>
+
+            <div class="space-y-3 text-sm">
+                <p><strong>Nama Pelanggan:</strong> <span id="detailNama"></span></p>
+                <p><strong>No Telepon:</strong> <span id="detailTelepon"></span></p>
+                <p><strong>Barang Laundry:</strong> <span id="detailBarang"></span></p>
+                <p><strong>Tanggal Masuk:</strong> <span id="detailMasuk"></span></p>
+                <p><strong>Tanggal Selesai:</strong> <span id="detailSelesai"></span></p>
+                <p><strong>Layanan:</strong> <span id="detailLayanan"></span></p>
+                <p><strong>Berat:</strong> <span id="detailBerat"></span></p>
+                <p><strong>Total Harga:</strong> Rp<span id="detailHarga"></span></p>
+                <p><strong>Status Pesanan:</strong> <span id="detailStatus"></span></p>
+                <p><strong>Status Pembayaran:</strong> <span id="detailStatusBayar"></span></p>
+                <p><strong>Metode Pembayaran:</strong> <span id="detailMetode"></span></p>
+                <p><strong>Tanggal Pembayaran:</strong> <span id="detailTglBayar"></span></p>
+            </div>
+
+            <button onclick="closeDetail()"
+                class="absolute top-3 right-3 text-gray-600 hover:text-gray-800">
+                ✖
+            </button>
+
+        </div>
+    </div>
     <script>
+    function showDetail(data) {
+
+        document.getElementById("detailNama").textContent = data.nama_pelanggan;
+        document.getElementById("detailTelepon").textContent = data.nomor_telephone ?? "-"; // ← BARIS DITAMBAHKAN
+        document.getElementById("detailBarang").textContent = data.barang_laundry;
+
+        document.getElementById("detailMasuk").textContent =
+            new Date(data.tanggal_pesanan).toLocaleDateString('id-ID');
+
+        document.getElementById("detailSelesai").textContent =
+            data.tanggal_selesai
+                ? new Date(data.tanggal_selesai).toLocaleDateString('id-ID')
+                : "-";
+
+        document.getElementById("detailLayanan").textContent =
+            data.layanan ? data.layanan.jenis_layanan : "-";
+
+        document.getElementById("detailBerat").textContent = data.berat_cucian + " kg";
+
+        document.getElementById("detailHarga").textContent =
+            Number(data.total_harga).toLocaleString('id-ID');
+
+        document.getElementById("detailStatus").textContent = data.status_pesanan;
+        document.getElementById("detailStatusBayar").textContent = data.status_pembayaran;
+        document.getElementById("detailMetode").textContent = data.metode_pembayaran ?? "-";
+
+        document.getElementById("detailTglBayar").textContent =
+            data.tanggal_pembayaran
+                ? new Date(data.tanggal_pembayaran).toLocaleDateString('id-ID')
+                : "-";
+
+        modalDetail.classList.remove("hidden");
+        modalDetail.classList.add("flex");
+    }
+
+    function closeDetail() {
+        modalDetail.classList.add("hidden");
+        modalDetail.classList.remove("flex");
+    }
+
     flatpickr("#monthYearPicker", {
     plugins: [
         new monthSelectPlugin({

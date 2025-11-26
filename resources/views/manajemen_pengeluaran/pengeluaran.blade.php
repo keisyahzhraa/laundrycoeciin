@@ -341,24 +341,22 @@
             modalDetail.classList.add("hidden");
             modalDetail.classList.remove("flex");
         }
-    </script>
-    <script>
-    flatpickr("#monthYearPicker", {
-    plugins: [
-        new monthSelectPlugin({
-            shorthand: true,
-            dateFormat: "m/Y",
-            altFormat: "F Y"
-        })
-    ],
-        locale: "id",
-        onChange: function(selectedDates, dateStr, instance) {
-            // submit form saat tanggal/bulan dipilih
-            document.getElementById('filterForm').submit();
+        
+        flatpickr("#monthYearPicker", {
+        plugins: [
+            new monthSelectPlugin({
+                shorthand: true,
+                dateFormat: "m/Y",
+                altFormat: "F Y"
+            })
+        ],
+            locale: "id",
+            onChange: function(selectedDates, dateStr, instance) {
+                // submit form saat tanggal/bulan dipilih
+                document.getElementById('filterForm').submit();
 
-        }
-    });
-
+            }
+        });
     </script>
 </body>
 </html>
