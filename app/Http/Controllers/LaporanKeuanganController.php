@@ -74,22 +74,27 @@ class LaporanKeuanganController extends Controller
             ? round((($totalPengeluaran - $pengeluaranPrev) / $pengeluaranPrev) * 100)
             : 0;
 
-        // === 6. REKAP TAHUNAN ===
+        // === 6. REKAP HARIAN ===
         $rekap = [];
-        for ($i = 1; $i <= 12; $i++) {
-            $pemasukan = Pesanan::whereMonth('created_at', $i)
-                ->whereYear('created_at', $tahun)
+        $jumlahHari = Carbon::create($tahun, $bulan)->daysInMonth;
+
+        for ($hari = 1; $hari <= $jumlahHari; $hari++) {
+            $tanggal = Carbon::create($tahun, $bulan, $hari)->format('Y-m-d');
+
+            // Pemasukan = total_harga dari pesanan LUNAS pada hari tsb
+            $pemasukan = Pesanan::whereDate('tanggal_pembayaran', $tanggal)
+                ->where('status_pembayaran', 'Lunas')
                 ->sum('total_harga') ?? 0;
 
-            $pengeluaran = Pengeluaran::whereMonth('tanggal', $i)
-                ->whereYear('tanggal', $tahun)
+            // Pengeluaran harian
+            $pengeluaran = Pengeluaran::whereDate('tanggal', $tanggal)
                 ->sum('nominal') ?? 0;
 
             $rekap[] = [
-                'bulan'         => Carbon::create()->month($i)->translatedFormat('F Y'),
-                'pemasukan'     => $pemasukan,
-                'pengeluaran'   => $pengeluaran,
-                'laba_bersih'   => $pemasukan - $pengeluaran,
+                'tanggal'      => Carbon::create($tahun, $bulan, $hari)->translatedFormat('d F Y'),
+                'pemasukan'    => $pemasukan,
+                'pengeluaran'  => $pengeluaran,
+                'laba_bersih'  => $pemasukan - $pengeluaran,
             ];
         }
 

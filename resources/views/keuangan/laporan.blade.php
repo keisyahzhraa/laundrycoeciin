@@ -340,7 +340,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">Bulan</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">Tanggal</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">Total Pemasukan (Rp)</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">Total Pengeluaran (Rp)</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600">Laba Bersih (Rp)</th>
@@ -354,7 +354,7 @@
                         <td class="px-6 py-4 text-sm text-gray-700">{{ $index + 1 }}</td>
 
                         <td class="px-6 py-4 text-sm text-gray-700">
-                            {{ $item['bulan'] }}
+                            {{ $item['tanggal'] }}
                         </td>
 
                         <td class="px-6 py-4 text-sm text-gray-700">
@@ -387,12 +387,6 @@
 
                 </tbody>
             </table>
-        </div>
-
-        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-end">
-            <button class="px-4 py-2 text-blue-600 hover:text-blue-700 text-sm font-medium">
-                Lihat Semua →
-            </button>
         </div>
     </div>
 </main>
