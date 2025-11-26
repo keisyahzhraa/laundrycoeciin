@@ -6,6 +6,7 @@
     <title>Tambah/Update Pesanan - Coociin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body style="background-color: #EFFCFF;">
     @include('layouts.sidebar')
@@ -88,7 +89,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Berat (kg)<span class="text-red-500 ml-1">*</span></label>
-                                <input type="decimal" name="berat_cucian" id="berat" placeholder="Masukkan berat laundry" required
+                                <input type="number" step="0.01" min="0.1" max="100" name="berat_cucian" id="berat" placeholder="Masukkan berat laundry" required
                                        value="{{ $pesanan->berat_cucian ?? old('berat_cucian') }}"
                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500">
                             </div>
@@ -160,8 +161,8 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Total Harga<span class="text-red-500 ml-1">*</span></label>
                                 <input type="text" id="total_harga_display"
                                     name="total_harga_display"
-                                    placeholder="Isi manual atau otomatis"
-                                    class="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-700">
+                                    placeholder="Total harga dihitung otomatis"
+                                    class="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-700" readonly>
 
                                 <input type="hidden" name="total_harga" id="total_harga"
                                     value="{{ $pesanan->total_harga ?? '' }}">
@@ -169,11 +170,24 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Metode Pembayaran</label>
                                 <select name="metode_pembayaran"
-                                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500">
-                                    <option value="" disabled {{ !isset($pesanan) ? 'selected' : '' }}>Pilih metode pembayaran</option>
-                                    <option value="Cash" {{ (isset($pesanan) && $pesanan->metode_pembayaran == 'Cash') ? 'selected' : '' }}>Cash</option>
-                                    <option value="Transfer" {{ (isset($pesanan) && $pesanan->metode_pembayaran == 'Transfer') ? 'selected' : '' }}>Transfer</option>
-                                    <option value="E-wallet" {{ (isset($pesanan) && $pesanan->metode_pembayaran == 'E-wallet') ? 'selected' : '' }}>E-Wallet</option>
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-green-500">
+
+                                    <option value="" {{ empty(old('metode_pembayaran', $pesanan->metode_pembayaran ?? '')) ? 'selected' : '' }}>
+                                        Pilih metode pembayaran
+                                    </option>
+
+                                    <option value="Cash" {{ old('metode_pembayaran', $pesanan->metode_pembayaran ?? '') == 'Cash' ? 'selected' : '' }}>
+                                        Cash
+                                    </option>
+
+                                    <option value="Transfer" {{ old('metode_pembayaran', $pesanan->metode_pembayaran ?? '') == 'Transfer' ? 'selected' : '' }}>
+                                        Transfer
+                                    </option>
+
+                                    <option value="E-wallet" {{ old('metode_pembayaran', $pesanan->metode_pembayaran ?? '') == 'E-wallet' ? 'selected' : '' }}>
+                                        E-Wallet
+                                    </option>
+
                                 </select>
                             </div>
                             <div>
@@ -214,13 +228,167 @@
     </main>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const form = document.getElementById("formPesanan");
+
+        const nama = document.querySelector("input[name='nama_pelanggan']");
+        const barang = document.querySelector("select[name='barang_laundry']");
+        const berat = document.getElementById("berat");
+        const layanan = document.getElementById("id_layanan");
+        const tanggalPesanan = document.querySelector("input[name='tanggal_pesanan']");
+        const tanggalSelesai = document.querySelector("input[name='tanggal_selesai']");
+        const totalHarga = document.getElementById("total_harga");
+        const metodeBayar = document.querySelector("select[name='metode_pembayaran']");
+        const statusBayar = document.querySelector("select[name='status_pembayaran']");
+        const tanggalBayar = document.querySelector("input[name='tanggal_pembayaran']");
+        const nomorTelp = document.querySelector("input[name='nomor_telephone']");
+
+        // ===================================================
+        //  Fungsi helper
+        // ===================================================
+
+        function highlight(el) {
+            el.classList.add("border-red-500", "bg-red-50");
+        }
+
+        function unhighlight(el) {
+            el.classList.remove("border-red-500", "bg-red-50");
+        }
+
+        function errorAlert(msg) {
+            Swal.fire({
+                title: "Validasi Gagal",
+                html: msg,
+                icon: "error",
+                confirmButtonColor: "#EF4444"
+            });
+        }
+
+        // ===================================================
+        //  Validasi seluruh form sebelum submit
+        // ===================================================
+        form.addEventListener("submit", function (e) {
+            let errors = [];
+
+            // Reset highlight dulu
+            document.querySelectorAll(".border-red-500").forEach(el => unhighlight(el));
+
+            // === NAMA PELANGGAN ===
+            if (!nama.value.trim()) {
+                errors.push("Nama pelanggan wajib diisi.");
+                highlight(nama);
+            }
+
+            // === BARANG LAUNDRY ===
+            if (!barang.value) {
+                errors.push("Barang laundry wajib dipilih.");
+                highlight(barang);
+            }
+
+            // === BERAT CUCIAN ===
+            let b = parseFloat(berat.value);
+            if (!berat.value.trim()) {
+                errors.push("Berat cucian wajib diisi.");
+                highlight(berat);
+            }
+            else if (isNaN(b) || b < 0.1 || b > 100) {
+                errors.push("Berat harus antara 0.1 – 100 kg.");
+                highlight(berat);
+            }
+
+            // === JENIS LAYANAN ===
+            if (!layanan.value) {
+                errors.push("Jenis layanan wajib dipilih.");
+                highlight(layanan);
+            }
+
+            // === TANGGAL ===
+            if (!tanggalPesanan.value) {
+                errors.push("Tanggal pesanan wajib diisi.");
+                highlight(tanggalPesanan);
+            }
+
+            if (!tanggalSelesai.value) {
+                errors.push("Tanggal selesai wajib diisi.");
+                highlight(tanggalSelesai);
+            }
+
+            if (tanggalPesanan.value && tanggalSelesai.value &&
+                new Date(tanggalPesanan.value) > new Date(tanggalSelesai.value)) {
+                errors.push("Tanggal selesai tidak boleh lebih awal dari tanggal pesanan.");
+                highlight(tanggalSelesai);
+            }
+
+            // === TOTAL HARGA (WAJIB ADA) ===
+            if (!totalHarga.value.trim() || isNaN(totalHarga.value)) {
+                errors.push("Total harga belum dihitung atau tidak valid.");
+                highlight(document.getElementById("total_harga_display"));
+            }
+
+            // === NOMOR TELEPON (OPSIONAL TAPI HARUS VALID) ===
+            if (nomorTelp.value.trim() && !/^[0-9+]+$/.test(nomorTelp.value)) {
+                errors.push("Nomor telepon hanya boleh berisi angka dan +.");
+                highlight(nomorTelp);
+            }
+
+            // === PEMBAYARAN RULE ===
+            if (statusBayar.value === "Lunas") {
+                if (!metodeBayar.value) {
+                    errors.push("Metode pembayaran wajib diisi (status Lunas).");
+                    highlight(metodeBayar);
+                }
+                if (!tanggalBayar.value) {
+                    errors.push("Tanggal pembayaran wajib diisi (status Lunas).");
+                    highlight(tanggalBayar);
+                }
+            }
+
+            // === CEK ERROR ===
+            if (errors.length > 0) {
+                e.preventDefault();
+
+                errorAlert(errors.join("<br>"));
+                return false;
+            }
+        });
+
+        // === RULE 1: Jika tanggal pembayaran dipilih → set status = Lunas + metode wajib terisi ===
+        tanggalBayar.addEventListener("change", function () {
+            if (tanggalBayar.value) {
+
+                statusBayar.value = "Lunas";
+
+                if (!metodeBayar.value) {
+                    alert("Silakan pilih metode pembayaran karena tanggal pembayaran sudah diisi.");
+                    metodeBayar.focus();
+                }
+            }
+        });
+
+        // === RULE 3: Jika status masih Belum Lunas → hapus tanggal & hapus metode ===
+        statusBayar.addEventListener("change", function () {
+            if (statusBayar.value === "Belum Lunas") {
+                tanggalBayar.value = "";
+                metodeBayar.value = "";
+            }
+        });
+
+        // === RULE 4: Jika metode pembayaran diisi tapi status Belum Lunas → kembalikan kosong ===
+        metodeBayar.addEventListener("change", function () {
+            if (statusBayar.value === "Belum Lunas" && metodeBayar.value !== "") {
+                alert("Tidak bisa memilih metode karena status pembayaran masih Belum Lunas.");
+                metodeBayar.value = ""; // reset pilihan
+            }
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
         const berat = document.getElementById('berat');
         const idLayanan = document.getElementById('id_layanan');
         const totalDisplay = document.getElementById('total_harga_display');
         const totalReal = document.getElementById('total_harga');
 
-            // Saat edit form, tampilkan total harga lama
         if (totalReal.value) {
             totalDisplay.value = "Rp " + Number(totalReal.value).toLocaleString('id-ID');
         }
@@ -242,33 +410,16 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    totalDisplay.value = "Rp " + data.total_harga.toLocaleString('id-ID');
                     totalReal.value = data.total_harga;
+                    totalDisplay.value = "Rp " + data.total_harga.toLocaleString('id-ID');
                 }
             });
         }
 
         berat.addEventListener("input", hitungTotal);
         idLayanan.addEventListener("change", hitungTotal);
-
-        totalDisplay.addEventListener("input", () => {
-            let angka = totalDisplay.value.replace(/[^0-9]/g, '');
-            totalReal.value = angka === "" ? "" : angka;
-        });
     });
     
-    document.getElementById('berat').addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9.]/g, '');
-
-        // Hanya boleh 1 titik
-        const parts = this.value.split('.');
-        if (parts.length > 2) {
-            this.value = parts[0] + '.' + parts[1];
-        }
-    });
-    </script>
-
-    <script>
     function openModalHarga() {
         document.getElementById('modalHarga').classList.remove('hidden');
     }
@@ -276,147 +427,6 @@
     function closeModalHarga() {
         document.getElementById('modalHarga').classList.add('hidden');
     }
-    </script>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const form = document.getElementById("formPesanan");
-        const inputDisplay = document.getElementById("total_harga_display");
-        const inputHidden  = document.getElementById("total_harga");
-
-        // === Membuat elemen warning ===
-        let warningText = document.createElement("p");
-        warningText.className = "text-red-500 text-xs mt-1 hidden";
-        warningText.innerText = "Cukup tuliskan angka saja.";
-        inputDisplay.insertAdjacentElement("afterend", warningText);
-
-        // === Hapus semua selain angka ===
-        function cleanNumber(str) {
-            return str.replace(/[^0-9]/g, "");
-        }
-
-        // === Format Rp. 999.999 ===
-        function formatRupiah(angka) {
-            return "Rp " + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
-
-        // === EVENT INPUT (langsung format saat user mengetik) ===
-        inputDisplay.addEventListener("input", function () {
-            let raw = cleanNumber(this.value);
-
-            // Jika user masukkan karakter selain angka
-            if (this.value.match(/[^0-9]/)) {
-                warningText.classList.remove("hidden");
-            } else {
-                warningText.classList.add("hidden");
-            }
-
-            if (raw.length === 0) {
-                this.value = "";
-                inputHidden.value = "";
-                return;
-            }
-
-            this.value = formatRupiah(raw);
-            inputHidden.value = raw;
-        });
-
-        // === 🔥 VALIDASI SUBMIT (Bagian penting agar form tidak lolos submit) ===
-        form.addEventListener("submit", function (e) {
-  
-            // BERSIHKAN angka tersembunyi dari Rp atau titik
-            inputHidden.value = inputHidden.value.replace(/[^0-9]/g, '');
-
-            let raw = inputHidden.value;
-
-            // 1. Tidak boleh kosong
-            if (!raw || raw.length === 0) {
-                e.preventDefault();
-                alert("Total harga tidak boleh kosong.");
-                return;
-            }
-
-            // 2. Tidak boleh lebih dari 8 digit (sesuai DECIMAL(10,2))
-            if (raw.length > 8) {
-                e.preventDefault();
-                alert("Total harga terlalu besar. Maksimal 8 digit angka.");
-                return;
-            }
-
-            // 3. Jika display mengandung karakter ilegal
-            if (inputDisplay.value.match(/[^0-9\.Rp\s]/)) {
-                e.preventDefault();
-                alert("Format total harga salah. Cukup tuliskan angka saja.");
-                return;
-            }
-        });
-
-    });
-    </script>
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const statusBayar = document.querySelector("select[name='status_pembayaran']");
-        const metodeBayar = document.querySelector("select[name='metode_pembayaran']");
-        const tanggalBayar = document.querySelector("input[name='tanggal_pembayaran']");
-
-        // === RULE 1: Jika tanggal pembayaran dipilih → set status = Lunas + metode wajib terisi ===
-        tanggalBayar.addEventListener("change", function () {
-            if (tanggalBayar.value) {
-
-                statusBayar.value = "Lunas";
-
-                if (!metodeBayar.value) {
-                    alert("Silakan pilih metode pembayaran karena tanggal pembayaran sudah diisi.");
-                    metodeBayar.focus();
-                }
-            }
-        });
-
-        // === RULE 2: Jika status pembayaran = Lunas → tanggal & metode harus dipilih ===
-        // === VALIDASI SAAT SUBMIT ===
-        const form = tanggalBayar.closest("form");
-
-        form.addEventListener("submit", function (e) {
-
-            // Jika status Lunas → tanggal & metode wajib
-            if (statusBayar.value === "Lunas") {
-
-                if (!tanggalBayar.value) {
-                    e.preventDefault();
-                    alert("Tanggal pembayaran wajib diisi karena status Lunas.");
-                    tanggalBayar.focus();
-                    return;
-                }
-
-                if (!metodeBayar.value) {
-                    e.preventDefault();
-                    alert("Metode pembayaran wajib diisi karena status Lunas.");
-                    metodeBayar.focus();
-                    return;
-                }
-            }
-        });
-
-        // === RULE 3: Jika status masih Belum Lunas → hapus tanggal & hapus metode ===
-        statusBayar.addEventListener("change", function () {
-            if (statusBayar.value === "Belum Lunas") {
-                tanggalBayar.value = "";
-                metodeBayar.value = "";
-            }
-        });
-
-        // === RULE 4: Jika metode pembayaran diisi tapi status Belum Lunas → kembalikan kosong ===
-        metodeBayar.addEventListener("change", function () {
-            if (statusBayar.value === "Belum Lunas" && metodeBayar.value !== "") {
-                alert("Tidak bisa memilih metode karena status pembayaran masih Belum Lunas.");
-                metodeBayar.value = ""; // reset pilihan
-            }
-        });
-
-    });
     </script>
 
     <div id="modalHarga"

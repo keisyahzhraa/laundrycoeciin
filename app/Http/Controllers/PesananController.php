@@ -43,6 +43,9 @@ class PesananController extends Controller
         if ($validated['status_pembayaran'] === 'Belum Lunas') {
             $validated['tanggal_pembayaran'] = null;
         }
+        if ($request->metode_pembayaran === "") {
+            $validated['metode_pembayaran'] = null;
+        }
 
         // Simpan data ke database
         Pesanan::create($validated);
@@ -120,6 +123,9 @@ class PesananController extends Controller
         // Jika pembayaran belum lunas, hapus tanggal pembayaran
         if ($validated['status_pembayaran'] === 'Belum Lunas') {
             $validated['tanggal_pembayaran'] = null;
+        }
+        if ($request->metode_pembayaran === "") {
+            $validated['metode_pembayaran'] = null;
         }
 
         $pesanan->update($validated);

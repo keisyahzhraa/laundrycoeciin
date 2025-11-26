@@ -24,7 +24,7 @@ return new class extends Migration
             $table->text('keterangan')->nullable();
             $table->enum('status_pesanan', ['Pending', 'Proses', 'Selesai'])->default('Pending');
             $table->decimal('total_harga', 10, 2);
-            $table->enum('metode_pembayaran', ['Cash', 'Transfer','E-wallet'])->nullable();
+            $table->enum('metode_pembayaran', ['Cash', 'Transfer', 'E-wallet'])->nullable()->default(null);
             $table->enum('status_pembayaran', ['Belum Lunas', 'Lunas'])->default('Belum Lunas');
             $table->dateTime('tanggal_pembayaran')->nullable();
             $table->timestamps();
