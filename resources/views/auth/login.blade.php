@@ -38,6 +38,23 @@
           <h2 class="text-4xl font-semibold text-gray-800">Login</h2>
         </div>
 
+        <!-- SUKSES -->
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-100 border border-green-300 rounded-xl text-green-800 shadow-sm animate-[fadeIn_0.3s_ease-out]">
+                <div class="flex items-center mb-2">
+                    <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 13l4 4L19 7" />
+                    </svg>
+                    <h3 class="font-semibold text-lg">Berhasil</h3>
+                </div>
+
+                <p class="text-sm leading-relaxed">
+                    {{ session('success') }}
+                </p>
+            </div>
+        @endif
+
         <!-- 🔥 Error Box -->
         @if ($errors->any())
           <div class="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-700 shadow-sm animate-[fadeIn_0.3s_ease-out]">
