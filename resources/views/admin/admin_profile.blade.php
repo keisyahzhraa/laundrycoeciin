@@ -256,6 +256,7 @@
                                            accept="image/jpeg,image/png,image/jpg"
                                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                                     <p class="text-xs text-gray-500 mt-2">Format: JPG, JPEG, PNG. Max: 2MB</p>
+                                    <p id="photoError" class="mt-2 text-red-500 text-sm font-medium hidden"></p>
                                 </div>
                             </div>
                         </div>
@@ -290,8 +291,24 @@
         // Preview foto saat upload
         document.getElementById('profileImageInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
+            const errorBox = document.getElementById('photoError');
+            const imgPreview = document.getElementById('imagePreview');
+
+            errorBox.textContent = "";
+            errorBox.classList.add('hidden');
+
             if (file) {
-                const imgPreview = document.getElementById('imagePreview');
+
+                // 🔥 Validasi ukuran maksimal 2MB
+                if (file.size > 2 * 1024 * 1024) {
+                    errorBox.textContent = "Ukuran gambar terlalu besar. Maksimal 2MB.";
+                    errorBox.classList.remove('hidden');
+
+                    event.target.value = ""; // reset input
+                    return; // hentikan preview
+                }
+                
+                // Tampilkan preview
                 imgPreview.src = URL.createObjectURL(file);
             }
         });

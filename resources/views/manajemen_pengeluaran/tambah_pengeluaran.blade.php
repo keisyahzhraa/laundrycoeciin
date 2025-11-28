@@ -97,6 +97,7 @@
                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all">
               <input type="hidden" name="nominal" id="nominal"
                   value="{{ $pengeluaran->nominal ?? '' }}">
+              <p id="nominal-error" class="text-red-500 text-xs mt-1 hidden"></p>
           </div>
 
           <!-- Kategori Pengeluaran -->
@@ -217,6 +218,7 @@
                   <p class="text-sm font-medium text-gray-600 mb-1">Klik untuk unggah bukti pengeluaran</p>
                   <p class="text-xs text-gray-400">PNG, JPG, JPEG (Max. 5MB)</p>
                   <p id="file-name" class="text-sm text-blue-600 font-medium mt-3"></p>
+                  <p id="file-error" class="text-red-500 text-xs mt-2 hidden"></p>
                 </div>
               </label>
             </div>
@@ -240,93 +242,134 @@
   </div>
 </main>
 
-<script>
-function updateFileName(input) {
-  const fileName = input.files[0]?.name;
-  const fileNameElement = document.getElementById('file-name');
-  if (fileName) {
-    fileNameElement.textContent = '📄 ' + fileName;
-  } else {
-    fileNameElement.textContent = '';
+  <script>
+  function updateFileName(input) {
+    const fileName = input.files[0]?.name;
+    const fileNameElement = document.getElementById('file-name');
+    if (fileName) {
+      fileNameElement.textContent = '📄 ' + fileName;
+    } else {
+      fileNameElement.textContent = '';
+    }
   }
-}
-</script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById('file-upload').addEventListener('change', function() {
 
-    const form = document.getElementById("formPengeluaran");
-    const inputDisplay = document.getElementById("nominal_display");
-    const inputHidden  = document.getElementById("nominal");
+      const errorBox = document.getElementById('file-error');
+      const file = this.files[0];
 
-    // === Warning elemen ===
-    let warningText = document.createElement("p");
-    warningText.className = "text-red-500 text-xs mt-1 hidden";
-    warningText.innerText = "Cukup tuliskan angka saja.";
-    inputDisplay.insertAdjacentElement("afterend", warningText);
+      // Reset text saat ganti file
+      errorBox.textContent = "";
+      errorBox.classList.add("hidden");
 
-    // ================ FUNGSI ================
-    function cleanNumber(str) {
-        return str.replace(/[^0-9]/g, "");
-    }
+      if (!file) return;
 
-    function formatRupiah(angka) {
-        return "Rp " + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
-    // ================ SAAT EDIT (ISI DISPLAY OTOMATIS) ================
-    if (inputHidden.value && inputHidden.value.length > 0) {
-        inputDisplay.value = formatRupiah(inputHidden.value);
-    }
+      if (file.size > maxSize) {
+          errorBox.innerHTML = `⚠️ Ukuran file terlalu besar. Maksimal <strong>5MB</strong>.`;
+          errorBox.classList.remove("hidden");
 
-    // ================ EVENT INPUT ================
-    inputDisplay.addEventListener("input", function () {
+          // Hapus file dari input
+          this.value = "";
+          document.getElementById("file-name").textContent = "";
 
-        let adaKarakterAneh = /[^0-9]/.test(this.value);  // cek karakter selain angka
+          return;
+      }
+  });
+  </script>
 
-        let raw = cleanNumber(this.value);
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
 
-        if (adaKarakterAneh) {
-            warningText.classList.remove("hidden");
-        } else {
-            warningText.classList.add("hidden");
-        }
+      const form = document.getElementById("formPengeluaran");
+      const inputDisplay = document.getElementById("nominal_display");
+      const inputHidden  = document.getElementById("nominal");
+      const errorBox = document.getElementById("nominal-error");
 
-        if (raw.length === 0) {
-            this.value = "";
-            inputHidden.value = "";
-            return;
-        }
+      // ================ FUNGSI ================
+      function cleanNumber(str) {
+          return str.replace(/[^0-9]/g, "");
+      }
 
-        this.value = formatRupiah(raw);
-        inputHidden.value = raw;
-    });
+      function formatRupiah(angka) {
+          return "Rp " + angka.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
 
-    // ================ VALIDASI SUBMIT ================
-    form.addEventListener("submit", function (e) {
+      // ================ SAAT EDIT (ISI DISPLAY OTOMATIS) ================
+      if (inputHidden.value && inputHidden.value.length > 0) {
+          inputDisplay.value = formatRupiah(inputHidden.value);
+      }
 
-        let raw = inputHidden.value;
+      // === Menampilkan error ===
+      function showError(msg) {
+          errorBox.textContent = "⚠️ " + msg;
+          errorBox.classList.remove("hidden");
+      }
 
-        if (!raw) {
-            e.preventDefault();
-            alert("Nominal pengeluaran tidak boleh kosong.");
-            return;
-        }
+      // === Menghilangkan error ===
+      function hideError() {
+          errorBox.classList.add("hidden");
+          errorBox.textContent = "";
+      }
+      
+      // ================ EVENT INPUT ================
+      inputDisplay.addEventListener("input", function () {
 
-        if (raw.length > 8) {
-            e.preventDefault();
-            alert("Nominal pengeluaran terlalu besar. Maksimal 8 digit angka.");
-            return;
-        }
+          let raw = cleanNumber(this.value);
 
-        // Jika masih ada huruf / simbol illegal di display
-        if (/[^0-9\.Rp\s]/.test(inputDisplay.value)) {
-            e.preventDefault();
-            alert("Format nominal salah. Isi hanya angka.");
-            return;
-        }
-    });
+          // Jika kosong
+          if (raw.length === 0) {
+              this.value = "";
+              inputHidden.value = "";
+              hideError();
+              return;
+          }
 
-});
-</script>
+          // Deteksi karakter tidak valid (harus cek aslinya, bukan raw)
+          let adaKarakterAneh = /[^0-9]/.test(this.value.replace(/[\.\sRp]/g, ""));
+
+          if (adaKarakterAneh) {
+              showError("Cukup masukkan angka saja.");
+          } else {
+              hideError();
+          }
+
+          // Format angka
+          this.value = formatRupiah(raw);
+          inputHidden.value = raw;
+
+          // Cek batas digit
+          if (raw.length > 8) {
+              showError("Nominal terlalu besar. Maksimal 8 digit.");
+          }
+      });
+
+      // ================ VALIDASI SUBMIT ================
+      form.addEventListener("submit", function (e) {
+
+          let raw = inputHidden.value;
+
+          if (!raw) {
+              e.preventDefault();
+              alert("Nominal pengeluaran tidak boleh kosong.");
+              return;
+          }
+
+          if (raw.length > 8) {
+              e.preventDefault();
+              alert("Nominal pengeluaran terlalu besar. Maksimal 8 digit angka.");
+              return;
+          }
+
+          // Jika masih ada huruf / simbol illegal di display
+          if (/[^0-9\.Rp\s]/.test(inputDisplay.value)) {
+              e.preventDefault();
+              alert("Format nominal salah. Isi hanya angka.");
+              return;
+          }
+      });
+
+  });
+  </script>
 @endsection
