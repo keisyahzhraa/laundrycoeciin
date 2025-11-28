@@ -83,17 +83,42 @@
           </div>
 
           <!-- Password -->
-          <div>
+          <div class="relative">
             <label class="block text-sm font-bold text-gray-700 mb-1">Password</label>
             <input 
               type="password" 
               name="password" 
+              id="password"
               placeholder="Masukan password"
               class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 
                 placeholder:text-gray-400
                 {{ $errors->has('password') ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-sky-400' }}"
               required
             />
+
+            <span id="togglePassword"
+                  class="absolute inset-y-0 right-3 top-1/2 flex text-gray-500 items-center cursor-pointer">
+
+              <!-- OPEN ICON -->
+              <svg id="iconOpen" xmlns="http://www.w3.org/2000/svg" 
+                  class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 
+                        9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+
+              <!-- CLOSED ICON (hidden by default) -->
+              <svg id="iconClosed" xmlns="http://www.w3.org/2000/svg" 
+                  class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7
+                      a9.97 9.97 0 012.231-3.568M6.59 6.59A9.953 9.953 0 0112 5c4.477 0 
+                      8.268 2.943 9.542 7a9.97 9.97 0 01-1.11 2.528M3 3l18 18" />
+              </svg>
+
+            </span>
 
             @error('password')
               <p class="mt-1 text-red-600 text-sm flex items-center">
@@ -124,5 +149,46 @@
     </div>
   </main>
 
+  <script>
+  const passwordInput = document.getElementById("password");
+  const toggleBtn = document.getElementById("togglePassword");
+  const iconOpen = document.getElementById("iconOpen");
+  const iconClosed = document.getElementById("iconClosed");
+
+  // Sembunyikan icon awalnya
+  toggleBtn.style.display = "none";
+
+  // Tampilkan icon hanya saat user mengetik
+  passwordInput.addEventListener("input", function () {
+      if (this.value.length > 0) {
+          toggleBtn.style.display = "block";
+      } else {
+          toggleBtn.style.display = "none";
+          passwordInput.type = "password";
+          iconOpen.classList.remove("hidden");
+          iconClosed.classList.add("hidden");
+      }
+  });
+
+  // Toggle show/hide password
+  toggleBtn.addEventListener("click", function () {
+      const isHidden = passwordInput.type === "password";
+
+      passwordInput.type = isHidden ? "text" : "password";
+      iconOpen.classList.toggle("hidden", isHidden);
+      iconClosed.classList.toggle("hidden", !isHidden);
+  });
+  </script>
+
+  <style>
+    input::-ms-reveal,
+  input::-ms-clear {
+      display: none !important;
+  }
+
+  input[type="password"]::-webkit-textfield-decoration-container {
+      display: none !important;
+  }
+  </style>
 </body>
 </html>

@@ -19,6 +19,11 @@ class PesananSeeder extends Seeder
         // Ambil semua layanan
         $layananList = HargaLayanan::all();
 
+        if ($layananList->isEmpty()) {
+            $this->command->warn('⚠️ Tidak ada layanan. Isi dulu harga_layanans sebelum seeder pesanan.');
+            return;
+        }
+
         for ($i = 0; $i < 10; $i++) {
 
             // Pilih layanan secara acak
