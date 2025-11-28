@@ -119,10 +119,11 @@
         <thead>
           <tr class="bg-gray-50">
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Nama Pelanggan</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">No. Telepon</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Barang Laundry</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Masuk</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Selesai</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Jenis</th>
+            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Jenis Layanan</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Berat</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Harga</th>
             <th class="px-4 py-3 text-sm font-semibold text-gray-700">Status</th>
@@ -133,33 +134,6 @@
         </tbody>
       </table>
     </div>
-    <!-- Modal -->
-<div id="modalPesanan" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-2xl w-11/12 md:w-3/4 lg:w-1/2 p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h3 id="modalTitle" class="text-xl font-semibold text-gray-800">Daftar Pesanan</h3>
-      <button id="closeModal" class="text-gray-500 hover:text-gray-700">&times;</button>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-left" id="modalTable">
-        <thead>
-          <tr class="bg-gray-50">
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Nama Pelanggan</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Barang Laundry</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Masuk</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Tanggal Selesai</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Jenis</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Berat</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Total Harga</th>
-            <th class="px-4 py-3 text-sm font-semibold text-gray-700">Status</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
   </div>
 </main>
 @endsection
@@ -227,6 +201,22 @@ document.addEventListener('DOMContentLoaded', function() {
         return `${day}-${month}-${year}`;
     };
 
+    // Mapping warna jenis layanan
+    window.layananColors = {
+        "Satuan": "bg-green-100 text-green-700",
+        "Regular": "bg-yellow-100 text-yellow-700",
+        "Express": "bg-purple-100 text-purple-700",
+        "Super Express/Kilat": "bg-red-100 text-red-700",
+        "": "bg-blue-100 text-blue-700"
+    };
+
+    // Mapping warna status pesanan
+    window.statusColors = {
+        "Pending": "bg-red-100 text-red-800",
+        "Proses": "bg-blue-100 text-blue-800",
+        "Selesai": "bg-green-100 text-green-800"
+    };
+    
     // Tabel Pesanan Mendekati Deadline
     const tbody = document.querySelector('#tableDeadline tbody');
     const pesananDeadline = @json($pesananDeadline);
@@ -234,22 +224,48 @@ document.addEventListener('DOMContentLoaded', function() {
     tbody.innerHTML = ''; // Kosongkan dulu
 
     pesananDeadline.forEach(p => {
-        const tr = document.createElement('tr');
-        let statusClass = p.status_pesanan == 'Selesai' ? 'green' : (p.status_pesanan == 'Dikerjakan' ? 'yellow' : 'red');
-        tr.classList.add('hover:bg-gray-50');
-        tr.innerHTML = `
-        <td class="px-4 py-4 text-gray-800 font-medium">${p.nama_pelanggan}</td>
-        <td class="px-4 py-4"><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">${p.barang_laundry}</span></td>
-        <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_pesanan)}</td>
-        <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_selesai)}</td>
-        <td class="px-4 py-4"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium">${p.jenis_layanan}</span></td>
-        <td class="px-4 py-4 text-gray-600">${parseFloat(p.berat_cucian).toFixed(2)} kg</td>
-        <td class="px-4 py-4 text-gray-600">Rp ${Number(p.total_harga).toLocaleString()}</td>
-        <td class="px-4 py-4"><span class="bg-${statusClass}-100 text-${statusClass}-700 px-3 py-1.5 rounded-lg text-sm font-medium">${p.status_pesanan}</span></td>
-        `;
-        tbody.appendChild(tr);
-    });
-    
+      const tr = document.createElement('tr');
+
+      // Ambil warna berdasarkan jenis layanan & status
+      const layananColor = window.layananColors[p.layanan?.jenis_layanan] ?? "bg-gray-100 text-gray-700";
+      const statusColor = window.statusColors[p.status_pesanan] ?? "bg-gray-100 text-gray-700";
+
+      tr.classList.add('hover:bg-gray-50');
+
+      tr.innerHTML = `
+          <td class="px-4 py-4 text-gray-800 font-medium">${p.nama_pelanggan}</td>
+          <td class="px-4 py-4 text-gray-600">${p.nomor_telephone ?? '-'}</td>
+
+          <!-- Barang laundry tetap ungu seperti sebelumnya -->
+          <td class="px-4 py-4">
+              <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm font-medium">
+                  ${p.barang_laundry}
+              </span>
+          </td>
+
+          <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_pesanan)}</td>
+          <td class="px-4 py-4 text-gray-600">${formatDate(p.tanggal_selesai)}</td>
+
+          <!-- Jenis Layanan (pakai warna dari mapping) -->
+          <td class="px-4 py-4">
+              <span class="${layananColor} px-3 py-1 rounded-lg text-sm font-medium">
+                  ${p.layanan?.jenis_layanan ?? '-'}
+              </span>
+          </td>
+
+          <td class="px-4 py-4 text-gray-600">${parseFloat(p.berat_cucian).toFixed(2)} kg</td>
+          <td class="px-4 py-4 text-gray-600">Rp ${Number(p.total_harga).toLocaleString()}</td>
+
+          <!-- Status (pakai warna dari mapping) -->
+          <td class="px-4 py-4">
+              <span class="${statusColor} px-3 py-1.5 rounded-lg text-sm font-medium">
+                  ${p.status_pesanan}
+              </span>
+          </td>
+      `;
+
+      tbody.appendChild(tr);
+  });
 
 });
 </script>

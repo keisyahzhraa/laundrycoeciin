@@ -117,7 +117,7 @@
                                 <!-- Nama Depan -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                                        Nama Depan <span class="text-red-500">*</span>
+                                        Nama Depan
                                     </label>
                                     <input type="text"
                                            name="nama_depan"

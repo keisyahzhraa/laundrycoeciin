@@ -25,8 +25,9 @@ class DashboardController extends Controller
             ->whereYear('tanggal_pesanan', $tahun)
             ->count();
 
-        $totalPendapatan = Pesanan::whereMonth('tanggal_pesanan', $bulan)
-            ->whereYear('tanggal_pesanan', $tahun)
+        $totalPendapatan = Pesanan::where('status_pembayaran', 'Lunas')
+            ->whereMonth('tanggal_pembayaran', $bulan)
+            ->whereYear('tanggal_pembayaran', $tahun)
             ->sum('total_harga');
 
         $totalSelesai = Pesanan::where('status_pesanan', 'Selesai')
@@ -55,15 +56,16 @@ class DashboardController extends Controller
         // ===== Chart Pendapatan Harian =====
         // Ambil total pendapatan per hari
         $chartRaw = Pesanan::select(
-                DB::raw('DAY(tanggal_pesanan) as hari'),
+                DB::raw('DAY(tanggal_pembayaran) as hari'),
                 DB::raw('SUM(total_harga) as total')
             )
-            ->whereMonth('tanggal_pesanan', $bulan)
-            ->whereYear('tanggal_pesanan', $tahun)
+            ->where('status_pembayaran', 'Lunas')
+            ->whereMonth('tanggal_pembayaran', $bulan)
+            ->whereYear('tanggal_pembayaran', $tahun)
             ->groupBy('hari')
             ->orderBy('hari')
             ->get()
-            ->pluck('total', 'hari') // key = hari, value = total
+            ->pluck('total', 'hari')
             ->toArray();
 
         // Semua hari di bulan berjalan
@@ -76,8 +78,10 @@ class DashboardController extends Controller
 
         // ===== Pesanan Mendekati Deadline (<3 hari dari sekarang) =====
         $pesananDeadline = Pesanan::where('status_pesanan', '!=', 'Selesai')
+            ->whereNotNull('tanggal_selesai')    
             ->whereBetween('tanggal_selesai', [$today, $limit])
             ->orderBy('tanggal_selesai', 'asc')
+            ->with('layanan')
             ->get();
 
         // ===== Return View =====
