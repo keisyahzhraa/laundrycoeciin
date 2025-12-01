@@ -68,7 +68,7 @@
     <!-- Total Dikerjakan -->
     <div class="bg-white rounded-2xl p-6 shadow flex justify-between items-start">
       <div>
-        <p class="text-sm text-gray-600 mb-3">Total<br>Dikerjakan</p>
+        <p class="text-sm text-gray-600 mb-3">Total Sedang<br>Dikerjakan</p>
         <h4 class="text-4xl font-bold text-gray-900" data-stat="dikerjakan">0</h4>
       </div>
       <div class="bg-yellow-100 p-3 rounded-xl">

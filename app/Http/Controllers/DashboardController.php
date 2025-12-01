@@ -35,12 +35,12 @@ class DashboardController extends Controller
             ->whereYear('tanggal_pesanan', $tahun)
             ->count();
 
-        $totalDikerjakan = Pesanan::where('status_pesanan', 'Dikerjakan')
+        $totalDikerjakan = Pesanan::where('status_pesanan', 'Proses')
             ->whereMonth('tanggal_pesanan', $bulan)
             ->whereYear('tanggal_pesanan', $tahun)
             ->count();
 
-        $totalBelumDikerjakan = Pesanan::where('status_pesanan', 'Belum')
+        $totalBelumDikerjakan = Pesanan::where('status_pesanan', 'Pending')
             ->whereMonth('tanggal_pesanan', $bulan)
             ->whereYear('tanggal_pesanan', $tahun)
             ->count();
