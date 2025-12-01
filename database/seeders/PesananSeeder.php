@@ -50,9 +50,14 @@ class PesananSeeder extends Seeder
                 ? $faker->randomElement(['Cash', 'Transfer', 'E-wallet'])
                 : null;
 
-            $tanggalPembayaran = $statusPembayaran === 'Lunas'
-                ? $faker->dateTimeBetween('-1 week', 'now')
-                : null;
+            if ($statusPembayaran === 'Lunas') {
+                $tanggalPembayaran = $faker->dateTimeBetween(
+                    $tanggalPesanan,
+                    $tanggalSelesai
+                );
+            } else {
+                $tanggalPembayaran = null;
+            }
 
             // Simpan ke database
             Pesanan::create([
