@@ -12,10 +12,6 @@
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-800">Manajemen Pengeluaran</h1>
     <p class="text-sm text-blue-600 bg-blue-50 px-4 py-2 rounded-xl flex items-center gap-2 mt-1">
-        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 2a6 6 0 016 6v3l1.293 1.293a1 1 0 01-1.414 1.414L15 12.414V8a5 5 0 10-10 0v4.414l-.879.879a1 1 0 01-1.414-1.414L4 11V8a6 6 0 016-6z"/>
-            <path d="M5 15a5 5 0 0010 0h-2a3 3 0 11-6 0H5z"/>
-        </svg>
 
         {{ isset($pengeluaran) 
             ? 'Ubah data pengeluaran yang sudah ada.' 
