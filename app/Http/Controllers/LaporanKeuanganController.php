@@ -16,8 +16,9 @@ class LaporanKeuanganController extends Controller
         $tahun = (int) $request->input('tahun', Carbon::now()->year);
 
         // === 1. TOTAL PEMASUKAN ===
-        $totalPemasukan = Pesanan::whereMonth('created_at', $bulan)
-            ->whereYear('created_at', $tahun)
+        $totalPemasukan = Pesanan::whereMonth('tanggal_pembayaran', $bulan)
+            ->whereYear('tanggal_pembayaran', $tahun)
+            ->where('status_pembayaran', 'Lunas')
             ->sum('total_harga') ?? 0;
 
         // === 2. TOTAL PENGELUARAN ===
@@ -39,8 +40,9 @@ class LaporanKeuanganController extends Controller
         $bulanSebelumnya = Carbon::create($tahun, $bulan)->subMonth();
 
         // Hitung pemasukan bulan sebelumnya
-        $pendapatanPrev = Pesanan::whereMonth('created_at', $bulanSebelumnya->month)
-            ->whereYear('created_at', $bulanSebelumnya->year)
+        $pendapatanPrev = Pesanan::whereMonth('tanggal_pembayaran', $bulanSebelumnya->month)
+            ->whereYear('tanggal_pembayaran', $bulanSebelumnya->year)
+            ->where('status_pembayaran', 'Lunas')
             ->sum('total_harga');
 
         // Hitung pengeluaran bulan sebelumnya
