@@ -13,6 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body style="background-color: #EFFCFF;">
@@ -196,11 +198,15 @@
                                         <!-- Delete -->
                                         <form method="POST"
                                             action="{{ route('pengeluaran.destroy', $item->id_pengeluaran) }}"
-                                            onsubmit="return confirm('Hapus pengeluaran ini?')">
-                                            @csrf @method('DELETE')
-                                            <button class="text-red-600 hover:bg-red-100 p-2 rounded-lg">
-                                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            class="delete-form">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="button"
+                                                    class="delete-btn text-red-600 hover:bg-red-100 p-2 rounded-lg">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
                                         </form>
@@ -356,6 +362,35 @@
                 document.getElementById('filterForm').submit();
 
             }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const deleteButtons = document.querySelectorAll(".delete-btn");
+
+            deleteButtons.forEach(btn => {
+                btn.addEventListener("click", function () {
+
+                    let form = this.closest("form");
+
+                    Swal.fire({
+                        title: 'Hapus Pengeluaran?',
+                        text: "Data yang dihapus tidak bisa dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+
+                });
+            });
         });
     </script>
 </body>

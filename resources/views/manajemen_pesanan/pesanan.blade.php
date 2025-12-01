@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body style="background-color: #EFFCFF;">
 
@@ -176,39 +177,41 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap text-center text-sm font-medium">
-    <div class="flex items-center justify-center space-x-2">
+                                        <div class="flex items-center justify-center space-x-2">
 
-        <!-- SHOW DETAIL -->
-        <button onclick='showDetail(@json($pesanan))'
-            class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 group">
-            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"/>
-            </svg>
-        </button>
+                                            <!-- SHOW DETAIL -->
+                                            <button onclick='showDetail(@json($pesanan))'
+                                                class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-lg transition-all duration-200 group">
+                                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7s-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </button>
 
-        <!-- EDIT -->
-        <a href="{{ route('pesanan.edit', $pesanan->id_pesanan) }}"
-            class="p-2 text-amber-600 hover:text-amber-800 hover:bg-amber-100 rounded-lg transition-all duration-200 group">
-            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-        </a>
+                                            <!-- EDIT -->
+                                            <a href="{{ route('pesanan.edit', $pesanan->id_pesanan) }}"
+                                                class="p-2 text-amber-600 hover:text-amber-800 hover:bg-amber-100 rounded-lg transition-all duration-200 group">
+                                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                            </a>
 
-        <!-- HAPUS -->
-        <form action="{{ route('pesanan.destroy', $pesanan->id_pesanan) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus pesanan ini?');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-lg transition-all duration-200 group">
-                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-            </button>
-        </form>
-
-    </div>
-</td>
-
+                                            <!-- HAPUS -->
+                                            <form method="POST"
+                                            action="{{ route('pesanan.destroy', $pesanan->id_pesanan) }}"
+                                            class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                        class="delete-btn text-red-600 hover:bg-red-100 p-2 rounded-lg">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
@@ -362,6 +365,31 @@
         }
     });
 
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+
+        deleteButtons.forEach(btn => {
+            btn.addEventListener("click", function () {
+            let form = this.closest("form");
+            Swal.fire({
+                    title: 'Hapus Pesanan?',
+                    text: "Data yang dihapus tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
     </script>
 
 </body>
